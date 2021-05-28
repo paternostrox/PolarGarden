@@ -17,7 +17,7 @@ func _ready():
 func _process(delta):
 	global_rotate(Vector3.UP,delta)
 
-func draw_tube(expression, lower, upper, sampling):
+func draw_tube(expression: Expression, lower: float, upper: float, sampling: float):
 	var arr = []
 	arr.resize(Mesh.ARRAY_MAX)
 
@@ -29,75 +29,86 @@ func draw_tube(expression, lower, upper, sampling):
 
 	## GENERATE MESH ##
 	var max_iterations = (upper - lower) / sampling
-	var i = 0
-	while i <= max_iterations:
-		var sample = i * sampling
 
-		# get two points to calculate tangent
-		var p0 = expression.execute([sample])
-		var p1 = expression.execute([sample +.0001])
+	var t_sample = lower
+	var bottom_ring = get_ring(expression, t_sample)
+	var top_ring
+	var i = 1
+	while i < max_iterations:
+		t_sample = i * sampling
 
-		# make my basis
-		var basis = Basis()
-		basis.y = p1-p0 # this is the tangent line
-		basis.z = basis.y.cross(Vector3.RIGHT)
-		basis.x = basis.z.cross(basis.y)
-		
-		var tube_height_vec = Vector3(0,sampling,0)
-
-		basis = basis.orthonormalized()
-
-		var p0t = basis.xform(p0)
-
-		# apply basis here
-		global_transform.basis = basis
-
-		var angle_inc = 360.0 / point_amount
-
-		var current_angle = 0
-		var current_point
-		var last_point = p0t + Vector3(cos(deg2rad(current_angle))*tube_radius, 
-		0, sin(deg2rad(current_angle))*tube_radius)
+		top_ring = get_ring(expression, t_sample)
 
 		for  j  in range(point_amount):
-			current_angle = fmod((current_angle + angle_inc),360.0)
+			
+			var next_j = (j+1) % point_amount
 
-			current_point = p0t + Vector3(cos(deg2rad(current_angle))*tube_radius, 
-			0, sin(deg2rad(current_angle))*tube_radius)
-
-			verts.append(last_point)
+			verts.append(bottom_ring[j])
 			uvs.append(Vector2(0,0))
 			
-			verts.append(current_point)
+			verts.append(bottom_ring[next_j])
 			uvs.append(Vector2(1,0))
 			
-			verts.append(current_point + tube_height_vec)
+			verts.append(top_ring[next_j])
 			uvs.append(Vector2(1,1))
 			
-			verts.append(last_point + tube_height_vec)
+			verts.append(top_ring[j])
 			uvs.append(Vector2(0,1))
 
-			var v1 = current_point - last_point
-			var v2 = last_point + tube_height_vec - last_point
+			var v1 = bottom_ring[next_j] - bottom_ring[j]
+			var v2 = top_ring[j] - bottom_ring[j]
 			var face_normal = v1.cross(v2)
 			
 			normals.append_array([face_normal,face_normal,face_normal,face_normal])
 
-			var idx = i*point_amount + j*4
+			var idx = i*point_amount*4 + j*4
 			indices.append_array([idx, idx+1, idx+3, idx+1, idx+2,idx+3])
 
-			last_point = current_point
+			bottom_ring = top_ring
 
 		i += 1
 
 	# Assign arrays to mesh array.
 	arr[Mesh.ARRAY_VERTEX] = verts
-	#arr[Mesh.ARRAY_TEX_UV] = uvs
-	#arr[Mesh.ARRAY_NORMAL] = normals
+	arr[Mesh.ARRAY_TEX_UV] = uvs
+	arr[Mesh.ARRAY_NORMAL] = normals
 	arr[Mesh.ARRAY_INDEX] = indices
 
 	# Create mesh surface from mesh array.
-	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr) # No blendshapes or compression used.	
+	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr) # No blendshapes or compression used.
+
+func get_ring(expression: Expression, t: float) -> PoolVector3Array:
+
+	# get two points to calculate tangent
+	var p0 = expression.execute([t])
+	var p1 = expression.execute([t + .0001])
+
+	var inv_basis = get_basis(p0, p1).inverse()
+
+	var angle_inc = 360.0 / point_amount
+	var current_angle = 0
+
+	var ring = PoolVector3Array()
+	for i in range(point_amount):
+		var point = p0 +  inv_basis.xform(Vector3(
+			cos(deg2rad(current_angle))*tube_radius, 0, sin(deg2rad(current_angle))*tube_radius))
+		ring.append(point)
+		current_angle = fmod((current_angle + angle_inc),360.0)
+
+	return ring
+
+
+func get_basis(p0: Vector3, p1: Vector3) -> Basis:
+
+	# make my basis
+	var basis = Basis()
+	basis.y = p1-p0 # this is the tangent line
+	basis.z = basis.y.cross(Vector3.RIGHT)
+	basis.x = basis.z.cross(basis.y)
+
+	basis = basis.orthonormalized()
+	return basis
+
 
 func draw_straight_tube(p0, p1):
 	var arr = []
