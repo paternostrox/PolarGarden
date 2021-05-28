@@ -1,6 +1,6 @@
 extends MeshInstance
 
-var tube_radius = 2
+var tube_radius = 1
 var point_amount = 6
 onready var stalk_exp = Expression.new()
 
@@ -9,10 +9,10 @@ func _ready():
 	#draw_plane(0.1,0)
 	#draw_straight_tube(Vector3(0,0,0),Vector3(20,40,20))
 
-	var err = stalk_exp.parse("Vector3(2*sin(3*t), 4*cos(3*t), 6*t)", ["t"])
+	var err = stalk_exp.parse("Vector3(4*sin(10*t), 6*t, 4*cos(10*t))", ["t"])
 	if err:
 		print("Parsing error: %d" % err)
-	draw_tube(stalk_exp,0,10,.2)
+	draw_tube(stalk_exp,0,10,.1)
 
 func _process(delta):
 	global_rotate(Vector3.UP,delta)
@@ -64,8 +64,7 @@ func draw_tube(expression: Expression, lower: float, upper: float, sampling: flo
 			var idx = i*point_amount*4 + j*4
 			indices.append_array([idx, idx+1, idx+3, idx+1, idx+2,idx+3])
 
-			bottom_ring = top_ring
-
+		bottom_ring = top_ring
 		i += 1
 
 	# Assign arrays to mesh array.
@@ -89,7 +88,7 @@ func get_ring(expression: Expression, t: float) -> PoolVector3Array:
 	var current_angle = 0
 
 	var ring = PoolVector3Array()
-	for i in range(point_amount):
+	for _i in range(point_amount):
 		var point = p0 +  inv_basis.xform(Vector3(
 			cos(deg2rad(current_angle))*tube_radius, 0, sin(deg2rad(current_angle))*tube_radius))
 		ring.append(point)

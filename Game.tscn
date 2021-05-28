@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://source/ProcGeoTest.gd" type="Script" id=1]
+[ext_resource path="res://source/ProceduralFlower.gd" type="Script" id=1]
 [ext_resource path="res://myMat.tres" type="Material" id=2]
 [ext_resource path="res://source/ExpressionTest.gd" type="Script" id=3]
 
