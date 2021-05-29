@@ -17,6 +17,7 @@ func _ready():
 func _process(delta):
 	global_rotate(Vector3.UP,delta)
 
+# WARNING (POSSIBLE BUG): Mesh rings are getting rotated on XZ axis, so in some cases the geometry breaks
 func draw_tube(expression: Expression, lower: float, upper: float, sampling: float):
 	var arr = []
 	arr.resize(Mesh.ARRAY_MAX)
