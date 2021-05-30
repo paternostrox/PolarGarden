@@ -17,6 +17,7 @@ mesh = SubResource( 1 )
 script = ExtResource( 1 )
 
 [node name="ExpressionTest" type="LineEdit" parent="."]
+visible = false
 margin_right = 58.0
 margin_bottom = 24.0
 text = "2+2"

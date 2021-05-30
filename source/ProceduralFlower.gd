@@ -3,22 +3,30 @@ extends MeshInstance
 var tube_radius = 1
 var point_amount = 6
 onready var stalk_exp = Expression.new()
+onready var petal_exp = Expression.new()
+
+var stalktop_pos
 
 func _ready():
-	#draw_plane(-1,0)
-	#draw_plane(0.1,0)
-	#draw_straight_tube(Vector3(0,0,0),Vector3(20,40,20))
-
-	var err = stalk_exp.parse("Vector3(4*sin(10*t), 6*t, 4*cos(10*t))", ["t"])
+	# SCREW (t): R → R³, t ↦ ( a·sin(k·t), b·cos(k·t), c·t )
+	var stalk = "Vector3(8*sin(2*t), 4*t, 8*cos(2*t))"
+	var disturbance = "+ Vector3(sin(2*t),sin(2*t),sin(2*t))"
+	var err = stalk_exp.parse(stalk + disturbance, ["t"])
 	if err:
 		print("Parsing error: %d" % err)
-	draw_tube(stalk_exp,0,10,.1)
+	stalktop_pos = draw_tube(stalk_exp,0,10,.1)
+	var petal = "spherical2cartesian(Vector3(5*sin(2*theta), theta, 0)) + stalktop_pos"
+	err = petal_exp.parse(petal, ["theta"])
+	if err:
+		print("Parsing error: %d" % err)
+	draw_tube(petal_exp,0,10,.1)
+
 
 func _process(delta):
 	global_rotate(Vector3.UP,delta)
 
 # WARNING (POSSIBLE BUG): Mesh rings are getting rotated on XZ axis, so in some cases the geometry breaks
-func draw_tube(expression: Expression, lower: float, upper: float, sampling: float):
+func draw_tube(expression: Expression, lower: float, upper: float, sampling: float) -> Vector3:
 	var arr = []
 	arr.resize(Mesh.ARRAY_MAX)
 
@@ -77,11 +85,14 @@ func draw_tube(expression: Expression, lower: float, upper: float, sampling: flo
 	# Create mesh surface from mesh array.
 	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr) # No blendshapes or compression used.
 
+	# Returns stalk top position
+	return expression.execute([t_sample], self)
+
 func get_ring(expression: Expression, t: float) -> PoolVector3Array:
 
 	# get two points to calculate tangent
-	var p0 = expression.execute([t])
-	var p1 = expression.execute([t + .0001])
+	var p0 = expression.execute([t], self)
+	var p1 = expression.execute([t + .0001], self)
 
 	var inv_basis = get_basis(p0, p1).inverse()
 
@@ -222,3 +233,10 @@ func draw_plane(x, z):
 
 	# Create mesh surface from mesh array.
 	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr) # No blendshapes or compression used.
+
+# (r,theta,phi) -> (x,y,z)
+func spherical2cartesian(spherical_pos: Vector3) -> Vector3:
+	var x = spherical_pos[0]*cos(spherical_pos[1])*sin(spherical_pos[2])
+	var y = spherical_pos[0]*sin(spherical_pos[1])*cos(spherical_pos[2])
+	var z = spherical_pos[0]*cos(spherical_pos[2])
+	return Vector3(x,y,z)
