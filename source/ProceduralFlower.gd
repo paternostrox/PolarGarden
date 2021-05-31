@@ -8,25 +8,30 @@ onready var petal_exp = Expression.new()
 var stalktop_pos
 
 func _ready():
+	# Build stalk expression
 	# SCREW (t): R → R³, t ↦ ( a·sin(k·t), b·cos(k·t), c·t )
-	var stalk = "Vector3(8*sin(2*t), 4*t, 8*cos(2*t))"
+	var stalk = "Vector3(8*sin(3*t), 4*t, 8*cos(3*t))"
 	var disturbance = "+ Vector3(sin(2*t),sin(2*t),sin(2*t))"
 	var err = stalk_exp.parse(stalk + disturbance, ["t"])
 	if err:
-		print("Parsing error: %d" % err)
-	stalktop_pos = draw_tube(stalk_exp,0,10,.1)
+		print("Parsing error (stalk): %d" % err)
+
+	# Build petal expression
 	var petal = "spherical2cartesian(Vector3(5*sin(2*theta), theta, 0)) + stalktop_pos"
 	err = petal_exp.parse(petal, ["theta"])
 	if err:
-		print("Parsing error: %d" % err)
-	draw_tube(petal_exp,0,10,.1)
+		print("Parsing error (petals): %d" % err)
+
+	# Draw flower
+	stalktop_pos = draw_tube(stalk_exp,.5,0,10,.1)
+	draw_tube(petal_exp,1,0,10,.1)
 
 
 func _process(delta):
 	global_rotate(Vector3.UP,delta)
 
 # WARNING (POSSIBLE BUG): Mesh rings are getting rotated on XZ axis, so in some cases the geometry breaks
-func draw_tube(expression: Expression, lower: float, upper: float, sampling: float) -> Vector3:
+func draw_tube(expression: Expression, radius: float, lower: float, upper: float, sampling: float) -> Vector3:
 	var arr = []
 	arr.resize(Mesh.ARRAY_MAX)
 
@@ -40,13 +45,13 @@ func draw_tube(expression: Expression, lower: float, upper: float, sampling: flo
 	var max_iterations = (upper - lower) / sampling
 
 	var t_sample = lower
-	var bottom_ring = get_ring(expression, t_sample)
+	var bottom_ring = get_ring(expression, t_sample, radius)
 	var top_ring
 	var i = 1
 	while i < max_iterations:
 		t_sample = i * sampling
 
-		top_ring = get_ring(expression, t_sample)
+		top_ring = get_ring(expression, t_sample, radius)
 
 		for  j  in range(point_amount):
 			
@@ -88,7 +93,7 @@ func draw_tube(expression: Expression, lower: float, upper: float, sampling: flo
 	# Returns stalk top position
 	return expression.execute([t_sample], self)
 
-func get_ring(expression: Expression, t: float) -> PoolVector3Array:
+func get_ring(expression: Expression, t: float, radius: float) -> PoolVector3Array:
 
 	# get two points to calculate tangent
 	var p0 = expression.execute([t], self)
@@ -102,7 +107,7 @@ func get_ring(expression: Expression, t: float) -> PoolVector3Array:
 	var ring = PoolVector3Array()
 	for _i in range(point_amount):
 		var point = p0 +  inv_basis.xform(Vector3(
-			cos(deg2rad(current_angle))*tube_radius, 0, sin(deg2rad(current_angle))*tube_radius))
+			cos(deg2rad(current_angle))*radius, 0, sin(deg2rad(current_angle))*radius))
 		ring.append(point)
 		current_angle = fmod((current_angle + angle_inc),360.0)
 

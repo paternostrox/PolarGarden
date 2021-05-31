@@ -1,8 +1,7 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://source/ProceduralFlower.gd" type="Script" id=1]
 [ext_resource path="res://myMat.tres" type="Material" id=2]
-[ext_resource path="res://source/ExpressionTest.gd" type="Script" id=3]
 
 [sub_resource type="ArrayMesh" id=1]
 
@@ -16,12 +15,36 @@ material_override = ExtResource( 2 )
 mesh = SubResource( 1 )
 script = ExtResource( 1 )
 
-[node name="ExpressionTest" type="LineEdit" parent="."]
-visible = false
-margin_right = 58.0
-margin_bottom = 24.0
-text = "2+2"
-script = ExtResource( 3 )
+[node name="UI" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI"]
+anchor_top = -0.023
+anchor_right = 0.185
+anchor_bottom = 1.0
+margin_top = 13.8
+margin_right = -0.440002
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Button" type="Button" parent="UI/VBoxContainer"]
+margin_right = 189.0
+margin_bottom = 20.0
+text = "Flower 1"
+
+[node name="Button2" type="Button" parent="UI/VBoxContainer"]
+margin_top = 24.0
+margin_right = 189.0
+margin_bottom = 44.0
+text = "Flower 2"
+
+[node name="Button3" type="Button" parent="UI/VBoxContainer"]
+margin_top = 48.0
+margin_right = 189.0
+margin_bottom = 68.0
+text = "Flower 3"
