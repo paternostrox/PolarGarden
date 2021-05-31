@@ -8,7 +8,7 @@
 [node name="Root" type="Spatial"]
 
 [node name="Camera" type="Camera" parent="."]
-transform = Transform( 1, 0, 0, 0, 0.794627, 0.607098, 0, -0.607098, 0.794627, -1.90735e-06, 63.5454, 59.0163 )
+transform = Transform( 1, 0, 0, 0, 0.794627, 0.607098, 0, -0.607098, 0.794627, -1.90735e-06, 77.807, 59.0163 )
 
 [node name="MeshInstance" type="MeshInstance" parent="."]
 material_override = ExtResource( 2 )
@@ -35,16 +35,16 @@ __meta__ = {
 [node name="Button" type="Button" parent="UI/VBoxContainer"]
 margin_right = 189.0
 margin_bottom = 20.0
-text = "Flower 1"
+text = "Flor 1"
 
 [node name="Button2" type="Button" parent="UI/VBoxContainer"]
 margin_top = 24.0
 margin_right = 189.0
 margin_bottom = 44.0
-text = "Flower 2"
+text = "Flor 2"
 
 [node name="Button3" type="Button" parent="UI/VBoxContainer"]
 margin_top = 48.0
 margin_right = 189.0
 margin_bottom = 68.0
-text = "Flower 3"
+text = "Flor 3"

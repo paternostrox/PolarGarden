@@ -7,10 +7,10 @@ static func cartesian2polar(crt_pos: Vector2) -> Vector2:
     return Vector2(r, theta)
 
 # (r,theta) -> (x,y)
-static func polar2cartesian(polar_pos: Vector2) -> Vector2:
-    var x = polar_pos[0] * cos(polar_pos[1])
-    var y = polar_pos[0] * sin(polar_pos[1])
-    return Vector2(x, y)
+# static func polar2cartesian(polar_pos: Vector2) -> Vector2:
+#     var x = polar_pos[0] * cos(polar_pos[1])
+#     var y = polar_pos[0] * sin(polar_pos[1])
+#     return Vector2(x, y)
 
 # (x,y,z) -> (r,theta,phi)
 static func cartesian2spherical(crt_pos: Vector3) -> Vector3:

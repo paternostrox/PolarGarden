@@ -8,7 +8,16 @@ onready var petal_exp = Expression.new()
 var stalktop_pos
 
 func _ready():
-	# Build stalk expression
+	draw_f1()
+	draw_f2()
+	draw_f3()
+
+
+func _process(delta):
+	global_rotate(Vector3.UP,delta)
+
+func draw_f1():
+		# Build stalk expression
 	# SCREW (t): R → R³, t ↦ ( a·sin(k·t), b·cos(k·t), c·t )
 	var stalk = "Vector3(8*sin(3*t), 4*t, 8*cos(3*t))"
 	var disturbance = "+ Vector3(sin(2*t),sin(2*t),sin(2*t))"
@@ -17,7 +26,7 @@ func _ready():
 		print("Parsing error (stalk): %d" % err)
 
 	# Build petal expression
-	var petal = "spherical2cartesian(Vector3(5*sin(2*theta), theta, 0)) + stalktop_pos"
+	var petal = "v2_to_v3(0, polar2cartesian(5*sin(2*theta), theta)) + stalktop_pos"
 	err = petal_exp.parse(petal, ["theta"])
 	if err:
 		print("Parsing error (petals): %d" % err)
@@ -26,9 +35,43 @@ func _ready():
 	stalktop_pos = draw_tube(stalk_exp,.5,0,10,.1)
 	draw_tube(petal_exp,1,0,10,.1)
 
+func draw_f2():
+		# Build stalk expression
+	# SCREW (t): R → R³, t ↦ ( a·sin(k·t), b·cos(k·t), c·t )
+	var stalk = "Vector3(8*sin(2*t), 4*t, 8*cos(2*t))"
+	var disturbance = "+ Vector3(sin(2*t),sin(2*t),sin(2*t))"
+	var err = stalk_exp.parse(stalk + disturbance, ["t"])
+	if err:
+		print("Parsing error (stalk): %d" % err)
 
-func _process(delta):
-	global_rotate(Vector3.UP,delta)
+	# Build petal expression
+	var petal = "spherical2cartesian(Vector3(10*sin(4*theta), theta, 1)) + stalktop_pos"
+	err = petal_exp.parse(petal, ["theta"])
+	if err:
+		print("Parsing error (petals): %d" % err)
+
+	# Draw flower
+	stalktop_pos = draw_tube(stalk_exp,.5,0,10,.1)
+	draw_tube(petal_exp,.5,0,200,.1)
+
+func draw_f3():
+		# Build stalk expression
+	# SCREW (t): R → R³, t ↦ ( a·sin(k·t), b·cos(k·t), c·t )
+	var stalk = "Vector3(8*sin(1*t), 6*t, 8*cos(1*t))"
+	var disturbance = "+ Vector3(sin(3*t),cos(3*t),cos(3*t))"
+	var err = stalk_exp.parse(stalk + disturbance, ["t"])
+	if err:
+		print("Parsing error (stalk): %d" % err)
+
+	# Build petal expression
+	var petal = "spherical2cartesian(Vector3(10*sin((PI)*theta), theta, 1)) + stalktop_pos"
+	err = petal_exp.parse(petal, ["theta"])
+	if err:
+		print("Parsing error (petals): %d" % err)
+
+	# Draw flower
+	stalktop_pos = draw_tube(stalk_exp,.5,0,10,.1)
+	draw_tube(petal_exp,.5,0,200,.1)
 
 # WARNING (POSSIBLE BUG): Mesh rings are getting rotated on XZ axis, so in some cases the geometry breaks
 func draw_tube(expression: Expression, radius: float, lower: float, upper: float, sampling: float) -> Vector3:
@@ -125,6 +168,21 @@ func get_basis(p0: Vector3, p1: Vector3) -> Basis:
 	basis = basis.orthonormalized()
 	return basis
 
+# (r,theta,phi) -> (x,y,z)
+func spherical2cartesian(spherical_pos: Vector3) -> Vector3:
+	var x = spherical_pos[0]*cos(spherical_pos[1])*sin(spherical_pos[2])
+	var y = spherical_pos[0]*sin(spherical_pos[1])*sin(spherical_pos[2])
+	var z = spherical_pos[0]*cos(spherical_pos[2])
+	return Vector3(x,y,z)
+
+# (r,theta) -> (x,y)
+func polar2cartesian(polar_pos: Vector2) -> Vector2:
+	var x = polar_pos[0] * cos(polar_pos[1])
+	var y = polar_pos[0] * sin(polar_pos[1])
+	return Vector2(x, y)
+
+func v2_to_v3(x: float, v2: Vector2):
+	return Vector3(x, v2.x, v2.y)
 
 func draw_straight_tube(p0, p1):
 	var arr = []
@@ -238,10 +296,3 @@ func draw_plane(x, z):
 
 	# Create mesh surface from mesh array.
 	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr) # No blendshapes or compression used.
-
-# (r,theta,phi) -> (x,y,z)
-func spherical2cartesian(spherical_pos: Vector3) -> Vector3:
-	var x = spherical_pos[0]*cos(spherical_pos[1])*sin(spherical_pos[2])
-	var y = spherical_pos[0]*sin(spherical_pos[1])*cos(spherical_pos[2])
-	var z = spherical_pos[0]*cos(spherical_pos[2])
-	return Vector3(x,y,z)
