@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://source/ProceduralFlower.gd" type="Script" id=1]
-[ext_resource path="res://myMat.tres" type="Material" id=2]
+[ext_resource path="res://materials/myMat.tres" type="Material" id=2]
 
 [sub_resource type="ArrayMesh" id=1]
 
@@ -9,6 +9,8 @@
 
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( 1, 0, 0, 0, 0.794627, 0.607098, 0, -0.607098, 0.794627, -1.90735e-06, 77.807, 59.0163 )
+
+[node name="DirectionalLight" type="DirectionalLight" parent="."]
 
 [node name="MeshInstance" type="MeshInstance" parent="."]
 material_override = ExtResource( 2 )

@@ -26,14 +26,14 @@ func draw_f1():
 		print("Parsing error (stalk): %d" % err)
 
 	# Build petal expression
-	var petal = "v2_to_v3(0, polar2cartesian(5*sin(2*theta), theta)) + stalktop_pos"
+	var petal = "v2_to_v3(0, polar2cartesian(5*sin(4*theta), theta)) + stalktop_pos"
 	err = petal_exp.parse(petal, ["theta"])
 	if err:
 		print("Parsing error (petals): %d" % err)
 
 	# Draw flower
 	stalktop_pos = draw_tube(stalk_exp,.5,0,10,.1)
-	draw_tube(petal_exp,1,0,10,.1)
+	draw_tube(petal_exp,1,0,2*PI,.01)
 
 func draw_f2():
 		# Build stalk expression
@@ -71,7 +71,7 @@ func draw_f3():
 
 	# Draw flower
 	stalktop_pos = draw_tube(stalk_exp,.5,0,10,.1)
-	draw_tube(petal_exp,.5,0,200,.1)
+	draw_tube(petal_exp,.5,0,100,.1)
 
 # WARNING (POSSIBLE BUG): Mesh rings are getting rotated on XZ axis, so in some cases the geometry breaks
 func draw_tube(expression: Expression, radius: float, lower: float, upper: float, sampling: float) -> Vector3:
