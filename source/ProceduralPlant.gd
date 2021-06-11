@@ -7,14 +7,36 @@ onready var petal_exp = Expression.new()
 
 var stalktop_pos
 
+var f1_active = false
+var f2_active = false
+var f3_active = false
+
 func _ready():
-	draw_f1()
-	draw_f2()
-	draw_f3()
+	pass
 
 
 func _process(delta):
 	global_rotate(Vector3.UP,delta)
+
+func toggle_plant(n: int):
+	match n:
+		0:
+			f1_active = !f1_active
+		1:
+			f2_active = !f2_active
+		2:
+			f3_active = !f3_active
+	
+	for i in range(mesh.get_surface_count()-1):
+		mesh.surface_remove(i)
+
+	if f1_active:
+		draw_f1()
+	if f2_active:
+		draw_f2()
+	if f3_active:
+		draw_f3()
+
 
 func draw_f1():
 		# Build stalk expression
