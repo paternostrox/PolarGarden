@@ -45,63 +45,6 @@ func draw_plant():
 	stalktop_pos = draw_tube(stalk_exp, tube_radius/2, 0, stalk_length, .1)
 	draw_tube(flower_exp, tube_radius, 0, flower_length, .1)
 
-func draw_f1():
-	# Build stalk expression
-	# SCREW (t): R → R³, t ↦ ( a·sin(k·t), b·cos(k·t), c·t )
-	var stalk = "Vector3(8*sin(3*t), 4*t, 8*cos(3*t))"
-	var disturbance = "+ Vector3(sin(2*t),sin(2*t),sin(2*t))"
-	var err = stalk_exp.parse(stalk + disturbance, ["t"])
-	if err:
-		print("Parsing error (stalk): %d" % err)
-
-	# Build flower expression
-	var flower = "v2_to_v3(0, polar2cartesian(5*sin(4*theta), theta)) + stalktop_pos"
-	err = flower_exp.parse(flower, ["theta"])
-	if err:
-		print("Parsing error (flower): %d" % err)
-
-	# Draw flower
-	stalktop_pos = draw_tube(stalk_exp,.5,0,10,.1)
-	draw_tube(flower_exp,1,0,2*PI,.01)
-
-func draw_f2():
-	# Build stalk expression
-	# SCREW (t): R → R³, t ↦ ( a·sin(k·t), b·cos(k·t), c·t )
-	var stalk = "Vector3(8*sin(2*t), 4*t, 8*cos(2*t))"
-	var disturbance = "+ Vector3(sin(2*t),sin(2*t),sin(2*t))"
-	var err = stalk_exp.parse(stalk + disturbance, ["t"])
-	if err:
-		print("Parsing error (stalk): %d" % err)
-
-	# Build flower expression
-	var flower = "spherical2cartesian(Vector3(10*sin(4*theta), theta, 1)) + stalktop_pos"
-	err = flower_exp.parse(flower, ["theta"])
-	if err:
-		print("Parsing error (flower): %d" % err)
-
-	# Draw flower
-	stalktop_pos = draw_tube(stalk_exp,.5,0,10,.1)
-	draw_tube(flower_exp,.5,0,200,.1)
-
-func draw_f3():
-	# Build stalk expression
-	# SCREW (t): R → R³, t ↦ ( a·sin(k·t), b·cos(k·t), c·t )
-	var stalk = "Vector3(8*sin(1*t), 6*t, 8*cos(1*t))"
-	var disturbance = "+ Vector3(sin(3*t),cos(3*t),cos(3*t))"
-	var err = stalk_exp.parse(stalk + disturbance, ["t"])
-	if err:
-		print("Parsing error (stalk): %d" % err)
-
-	# Build flower expression
-	var flower = "spherical2cartesian(Vector3(10*sin((PI)*theta), theta, 1)) + stalktop_pos"
-	err = flower_exp.parse(flower, ["theta"])
-	if err:
-		print("Parsing error (flower): %d" % err)
-
-	# Draw flower
-	stalktop_pos = draw_tube(stalk_exp,.5,0,10,.1)
-	draw_tube(flower_exp,.5,0,100,.1)
-
 # WARNING (POSSIBLE BUG): Mesh rings are getting rotated on XZ axis, so in some cases the geometry breaks
 func draw_tube(expression: Expression, radius: float, lower: float, upper: float, sampling: float) -> Vector3:
 	var arr = []
