@@ -1,45 +1,52 @@
 extends MeshInstance
 
-var tube_radius = 1
 var point_amount = 6
+
+export(float) var tube_radius = 1
+# both always start at zero, so only length (end) is required
+export(float) var stalk_length = 10
+export(float) var flower_length = 2*PI
+
+export(String, MULTILINE) var stalk_eq
+export(String, MULTILINE) var stalk_disturbance_eq
+export(String, MULTILINE) var flower_eq
 onready var stalk_exp = Expression.new()
-onready var petal_exp = Expression.new()
+onready var flower_exp = Expression.new()
 
 var stalktop_pos
 
-var f1_active = false
-var f2_active = false
-var f3_active = false
+var plant_mesh # drawing occurs on this mesh
 
 func _ready():
-	pass
+	draw_plant()
 
 
 func _process(delta):
 	global_rotate(Vector3.UP,delta)
 
-func toggle_plant(n: int):
-	match n:
-		0:
-			f1_active = !f1_active
-		1:
-			f2_active = !f2_active
-		2:
-			f3_active = !f3_active
-	
-	for i in range(mesh.get_surface_count()-1):
-		mesh.surface_remove(i)
+func draw_plant():
+	plant_mesh = ArrayMesh.new()
+	mesh = plant_mesh
 
-	if f1_active:
-		draw_f1()
-	if f2_active:
-		draw_f2()
-	if f3_active:
-		draw_f3()
+	# Build stalk expression
+	# SCREW (t): R → R³, t ↦ ( a·sin(k·t), b·cos(k·t), c·t )
+	var stalk = stalk_eq + " + " + stalk_disturbance_eq
+	var err = stalk_exp.parse(stalk, ["t"])
+	if err:
+		print("Parsing error (stalk): %d" % err)
 
+	# Build flower expression
+	var flower = flower_eq + " + stalktop_pos"
+	err = flower_exp.parse(flower, ["theta"])
+	if err:
+		print("Parsing error (flower): %d" % err)
+
+	# Draw flower
+	stalktop_pos = draw_tube(stalk_exp, tube_radius/2, 0, stalk_length, .1)
+	draw_tube(flower_exp, tube_radius, 0, flower_length, .1)
 
 func draw_f1():
-		# Build stalk expression
+	# Build stalk expression
 	# SCREW (t): R → R³, t ↦ ( a·sin(k·t), b·cos(k·t), c·t )
 	var stalk = "Vector3(8*sin(3*t), 4*t, 8*cos(3*t))"
 	var disturbance = "+ Vector3(sin(2*t),sin(2*t),sin(2*t))"
@@ -47,18 +54,18 @@ func draw_f1():
 	if err:
 		print("Parsing error (stalk): %d" % err)
 
-	# Build petal expression
-	var petal = "v2_to_v3(0, polar2cartesian(5*sin(4*theta), theta)) + stalktop_pos"
-	err = petal_exp.parse(petal, ["theta"])
+	# Build flower expression
+	var flower = "v2_to_v3(0, polar2cartesian(5*sin(4*theta), theta)) + stalktop_pos"
+	err = flower_exp.parse(flower, ["theta"])
 	if err:
-		print("Parsing error (petals): %d" % err)
+		print("Parsing error (flower): %d" % err)
 
 	# Draw flower
 	stalktop_pos = draw_tube(stalk_exp,.5,0,10,.1)
-	draw_tube(petal_exp,1,0,2*PI,.01)
+	draw_tube(flower_exp,1,0,2*PI,.01)
 
 func draw_f2():
-		# Build stalk expression
+	# Build stalk expression
 	# SCREW (t): R → R³, t ↦ ( a·sin(k·t), b·cos(k·t), c·t )
 	var stalk = "Vector3(8*sin(2*t), 4*t, 8*cos(2*t))"
 	var disturbance = "+ Vector3(sin(2*t),sin(2*t),sin(2*t))"
@@ -66,18 +73,18 @@ func draw_f2():
 	if err:
 		print("Parsing error (stalk): %d" % err)
 
-	# Build petal expression
-	var petal = "spherical2cartesian(Vector3(10*sin(4*theta), theta, 1)) + stalktop_pos"
-	err = petal_exp.parse(petal, ["theta"])
+	# Build flower expression
+	var flower = "spherical2cartesian(Vector3(10*sin(4*theta), theta, 1)) + stalktop_pos"
+	err = flower_exp.parse(flower, ["theta"])
 	if err:
-		print("Parsing error (petals): %d" % err)
+		print("Parsing error (flower): %d" % err)
 
 	# Draw flower
 	stalktop_pos = draw_tube(stalk_exp,.5,0,10,.1)
-	draw_tube(petal_exp,.5,0,200,.1)
+	draw_tube(flower_exp,.5,0,200,.1)
 
 func draw_f3():
-		# Build stalk expression
+	# Build stalk expression
 	# SCREW (t): R → R³, t ↦ ( a·sin(k·t), b·cos(k·t), c·t )
 	var stalk = "Vector3(8*sin(1*t), 6*t, 8*cos(1*t))"
 	var disturbance = "+ Vector3(sin(3*t),cos(3*t),cos(3*t))"
@@ -85,15 +92,15 @@ func draw_f3():
 	if err:
 		print("Parsing error (stalk): %d" % err)
 
-	# Build petal expression
-	var petal = "spherical2cartesian(Vector3(10*sin((PI)*theta), theta, 1)) + stalktop_pos"
-	err = petal_exp.parse(petal, ["theta"])
+	# Build flower expression
+	var flower = "spherical2cartesian(Vector3(10*sin((PI)*theta), theta, 1)) + stalktop_pos"
+	err = flower_exp.parse(flower, ["theta"])
 	if err:
-		print("Parsing error (petals): %d" % err)
+		print("Parsing error (flower): %d" % err)
 
 	# Draw flower
 	stalktop_pos = draw_tube(stalk_exp,.5,0,10,.1)
-	draw_tube(petal_exp,.5,0,100,.1)
+	draw_tube(flower_exp,.5,0,100,.1)
 
 # WARNING (POSSIBLE BUG): Mesh rings are getting rotated on XZ axis, so in some cases the geometry breaks
 func draw_tube(expression: Expression, radius: float, lower: float, upper: float, sampling: float) -> Vector3:
@@ -153,7 +160,7 @@ func draw_tube(expression: Expression, radius: float, lower: float, upper: float
 	arr[Mesh.ARRAY_INDEX] = indices
 
 	# Create mesh surface from mesh array.
-	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr) # No blendshapes or compression used.
+	plant_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr) # No blendshapes or compression used.
 
 	# Returns stalk top position
 	return expression.execute([t_sample], self)
