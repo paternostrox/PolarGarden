@@ -39,8 +39,8 @@ material_override = ExtResource( 2 )
 mesh = SubResource( 1 )
 script = ExtResource( 1 )
 flower_length = 100.0
-stalk_eq = "Vector3(2*sin(3*t), 6*t, 2*cos(3*t))"
-stalk_disturbance_eq = "Vector3(sin(3*t),cos(3*t),cos(3*t))"
+stalk_eq = "Vector3(0, 50*ease(t/10, 0.2), 2*t)"
+stalk_disturbance_eq = "Vector3(0, 0, 0)"
 flower_eq = "spherical2cartesian(Vector3(10*sin((PI)*theta), theta, 1))"
 
 [node name="UI" type="Control" parent="."]

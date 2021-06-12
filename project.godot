@@ -8,6 +8,16 @@
 
 config_version=4
 
+_global_script_classes=[ {
+"base": "Reference",
+"class": "MathTools",
+"language": "GDScript",
+"path": "res://source/MathTools.gd"
+} ]
+_global_script_class_icons={
+"MathTools": ""
+}
+
 [application]
 
 config/name="polargarden"
