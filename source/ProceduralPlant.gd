@@ -24,6 +24,9 @@ func _ready():
 func _process(delta):
 	global_rotate(Vector3.UP,delta)
 
+func toggle_visible():
+	visible = !visible
+
 func draw_plant():
 	plant_mesh = ArrayMesh.new()
 	mesh = plant_mesh
