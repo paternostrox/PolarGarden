@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://source/ProceduralPlant.gd" type="Script" id=1]
 [ext_resource path="res://materials/myMat.tres" type="Material" id=2]
 [ext_resource path="res://source/ShowFlower.gd" type="Script" id=3]
+[ext_resource path="res://source/myass.gd" type="Script" id=4]
 
 [sub_resource type="ArrayMesh" id=1]
 
@@ -26,7 +27,7 @@ flower_eq = "v2_to_v3(0, polar2cartesian(5*sin(4*theta), theta))"
 material_override = ExtResource( 2 )
 mesh = SubResource( 1 )
 script = ExtResource( 1 )
-flower_length = 200.0
+flower_length = 6.283
 stalk_eq = "Vector3(8*sin(2*t), 4*t, 8*cos(2*t))"
 stalk_disturbance_eq = "Vector3(sin(2*t),sin(2*t),sin(2*t))"
 flower_eq = "spherical2cartesian(Vector3(10*sin(4*theta), theta, 1))"
@@ -35,10 +36,18 @@ flower_eq = "spherical2cartesian(Vector3(10*sin(4*theta), theta, 1))"
 material_override = ExtResource( 2 )
 mesh = SubResource( 1 )
 script = ExtResource( 1 )
-flower_length = 100.0
+flower_length = 20.0
 stalk_eq = "Vector3(0, 50*ease(t/10, 0.2), 2*t)"
 stalk_disturbance_eq = "Vector3(0, 0, 0)"
-flower_eq = "spherical2cartesian(Vector3(10*sin((PI)*theta), theta, 1))"
+flower_eq = "spherical2cartesian(Vector3(10*abs(sin(PI*theta)), theta, 1))"
+
+[node name="Plant4" type="MeshInstance" parent="."]
+material_override = ExtResource( 2 )
+mesh = SubResource( 1 )
+script = ExtResource( 4 )
+stalk_eq = "Vector3(0, 50*ease(t/10, 0.2), 2*t)"
+stalk_disturbance_eq = "Vector3(sin(2*t),sin(2*t),sin(2*t))"
+flower_eq = "v2_to_v3(0, polar2cartesian(5*sin(4*theta), theta))"
 
 [node name="UI" type="Control" parent="."]
 anchor_right = 1.0

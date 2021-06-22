@@ -1,0 +1,11 @@
+# first
+v2_to_v3(0, polar2cartesian(5*sin(4*theta), theta))
+spherical2cartesian(Vector3(10*sin(4*theta), theta, 1))
+spherical2cartesian(Vector3(10*sin((PI)*theta), theta, 1))
+
+# very nice
+spherical2cartesian(Vector3(10*sin((PI)*theta), theta, theta))
+spherical2cartesian(Vector3(10*abs(sin(PI*theta)), theta, 1))
+
+# crazy shit
+spherical2cartesian(Vector3(10*abs(sin(PI*theta)), theta, 1))+spherical2cartesian(Vector3(10*sin(4*theta), theta, 1))

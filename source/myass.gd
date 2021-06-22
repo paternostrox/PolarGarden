@@ -19,8 +19,86 @@ var stalktop_pos
 var plant_mesh # drawing occurs on this mesh
 
 func _ready():
-	draw_plant()
+    get_random_values()
+    draw_plant()
 
+func get_random_values():
+    var rng = RandomNumberGenerator.new()
+    rng.randomize()
+    #var stalk_type = rng.randi_range(0, 1)
+    var stalk_type = 0
+
+    # CHOOSE STALK TYPE
+    match stalk_type:
+        # 1 SCREW (t): R → R³, t ↦ ( a·sin(k·t), b·t, c·cos(k·t))
+        0:
+            # boundaries to values (2 per value)
+            var boundaries = [
+                4,16, # a
+                2,8, # b
+                4,16, # c
+                2,6 # k
+            ]
+
+            var vals = PoolRealArray()
+
+            # Get random values for stalk (within the boundaries)
+            for i in range(boundaries.size()/2):
+                rng.randomize()
+                vals.append(rng.randf_range(boundaries[i],boundaries[i+1]))
+
+            stalk_eq = "Vector3(%f*sin(%f*t), %f*t, %f*cos(%f*t))" % [vals[0], vals[3], vals[1], vals[2], vals[3]]
+            
+            rng.randomize()
+            stalk_length = rng.randf_range(10, 100)
+
+        # 2 EXP (t): R → R³, t ↦ (a.t, b·ease(c.t, d), c·cos(k·t))
+        1:
+            # boundaries to values (2 per value)
+            var boundaries = [
+                4,16, # a
+                2,8, # b
+            ]
+
+            var vals = PoolRealArray()
+
+            # Get random values for stalk (within the boundaries)
+            for i in range(boundaries.size()/2):
+                rng.randomize()
+                vals.append(rng.randf_range(boundaries[i],boundaries[i+1]))
+
+            #stalk_eq = "Vector3(0, 50*ease(t/10, 0.2), 2*t)" % [vals[0], vals[3], vals[1], vals[2], vals[3]] # REVIEW THIS
+            
+            rng.randomize()
+            stalk_length = rng.rand_range(10, 70)
+
+    # CHOOSE FLOWER TYPE
+    rng.randomize()
+    #var flower_type = rng.randi_range(0, 1)
+    var flower_type = 0
+
+    match flower_type:
+        # 1 Spherical Rational Polar (theta, 1)
+        0:
+            var boundaries = [
+                8,20, # a
+                1,10, # n
+                1,10, # d
+            ]
+
+            var vals = PoolIntArray()
+
+            # Get random values for stalk (within the boundaries)
+            for i in range(boundaries.size()/2):
+                rng.randomize()
+                vals.append(rng.randi_range(boundaries[i],boundaries[i+1]))
+
+            flower_eq = "spherical2cartesian(Vector3(%f*sin(%f*theta), theta, 1))" % [vals[0], vals[1]]
+            
+            var p = 2 if ((vals[1]*vals[2]) % 2 == 0) else 1 
+            flower_length = PI * vals[2] * p
+            
+        # 2 Spherical Irrational Polar
 
 func _process(delta):
 	global_rotate(Vector3.UP,delta)
