@@ -2,28 +2,29 @@ extends MeshInstance
 
 var rng = RandomNumberGenerator.new()
 
-var stalktop_pos
-var tube_radius = 1
-var point_amount = 6
-var stalk_length
-var flower_length
+var tube_radius : float = 1
+var point_amount : int = 6
+var stalk_length : float
+var flower_length : float
 
-var stalk_eq
-var flower_eq
+var stalk_eq : String
+var flower_eq : String
 
 onready var stalk_exp = Expression.new()
 onready var flower_exp = Expression.new()
 
 var plant_mesh
+var stalktop_pos
 
 func toggle_visible():
 	visible = !visible
 
 func _ready():
+	draw_random_plant()
+
+func draw_random_plant():
 	get_random_values()
 	draw_plant()
-	print(stalk_exp.has_execute_failed())
-	print(flower_exp.has_execute_failed())
 
 func get_random_values():
 	rng.randomize()
@@ -49,10 +50,11 @@ func get_random_values():
 				rng.randomize()
 				vals.append(rng.randf_range(boundaries[i],boundaries[i+1]))
 
-			stalk_eq = "Vector3(%f*sin(%f*t), %f*t, %f*cos(%f*t))" % [vals[0], vals[3], vals[1], vals[2], vals[3]]
+			stalk_eq = "Vector3(%f*sin(%f*t), %f*t, %f*cos(%f*t))" % [vals[0], vals[3], vals[1], vals[0], vals[3]]
 			
+			var stalk_factor = 1/(vals[1]*0.3)
 			rng.randomize()
-			stalk_length = rng.randf_range(10, 100)
+			stalk_length = rng.randf_range(10*stalk_factor, 15*stalk_factor)
 
 		# 2 EXP (t): R → R³, t ↦ (a.t, b·ease(c.t, d), c·cos(k·t))
 		1:
@@ -120,8 +122,8 @@ func draw_plant():
 		return
 
 	# Draw flower
-	stalktop_pos = draw_tube(stalk_exp, tube_radius/2, 0, stalk_length, .1)
-	draw_tube(flower_exp, tube_radius, 0, flower_length, .1)
+	stalktop_pos = draw_tube(stalk_exp, tube_radius/2, 0, stalk_length, .05)
+	draw_tube(flower_exp, tube_radius, 0, flower_length, .05)
 
 # WARNING (POSSIBLE BUG): Mesh rings are getting rotated on XZ axis, so in some cases the geometry breaks
 func draw_tube(expression: Expression, radius: float, lower: float, upper: float, sampling: float) -> Vector3:

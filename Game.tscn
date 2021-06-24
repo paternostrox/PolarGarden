@@ -1,9 +1,8 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://source/ProceduralPlant.gd" type="Script" id=1]
 [ext_resource path="res://materials/myMat.tres" type="Material" id=2]
 [ext_resource path="res://source/ShowFlower.gd" type="Script" id=3]
-[ext_resource path="res://source/myass.gd" type="Script" id=4]
+[ext_resource path="res://source/RandomPlant.gd" type="Script" id=4]
 
 [sub_resource type="ArrayMesh" id=1]
 
@@ -14,40 +13,10 @@ transform = Transform( 1, 0, 0, 0, 0.794627, 0.607098, 0, -0.607098, 0.794627, -
 
 [node name="DirectionalLight" type="DirectionalLight" parent="."]
 
-[node name="Plant" type="MeshInstance" parent="."]
-material_override = ExtResource( 2 )
-mesh = SubResource( 1 )
-script = ExtResource( 1 )
-flower_length = 6.283
-stalk_eq = "Vector3(8*sin(3*t), 4*t, 8*cos(3*t))"
-stalk_disturbance_eq = "Vector3(sin(2*t),sin(2*t),sin(2*t))"
-flower_eq = "v2_to_v3(0, polar2cartesian(5*sin(4*theta), theta))"
-
-[node name="Plant2" type="MeshInstance" parent="."]
-material_override = ExtResource( 2 )
-mesh = SubResource( 1 )
-script = ExtResource( 1 )
-flower_length = 6.283
-stalk_eq = "Vector3(8*sin(2*t), 4*t, 8*cos(2*t))"
-stalk_disturbance_eq = "Vector3(sin(2*t),sin(2*t),sin(2*t))"
-flower_eq = "spherical2cartesian(Vector3(10*sin(4*theta), theta, 1))"
-
-[node name="Plant3" type="MeshInstance" parent="."]
-material_override = ExtResource( 2 )
-mesh = SubResource( 1 )
-script = ExtResource( 1 )
-flower_length = 20.0
-stalk_eq = "Vector3(0, 50*ease(t/10, 0.2), 2*t)"
-stalk_disturbance_eq = "Vector3(0, 0, 0)"
-flower_eq = "spherical2cartesian(Vector3(10*abs(sin(PI*theta)), theta, 1))"
-
 [node name="Plant4" type="MeshInstance" parent="."]
 material_override = ExtResource( 2 )
 mesh = SubResource( 1 )
 script = ExtResource( 4 )
-stalk_eq = "Vector3(0, 50*ease(t/10, 0.2), 2*t)"
-stalk_disturbance_eq = "Vector3(sin(2*t),sin(2*t),sin(2*t))"
-flower_eq = "v2_to_v3(0, polar2cartesian(5*sin(4*theta), theta))"
 
 [node name="UI" type="Control" parent="."]
 anchor_right = 1.0
@@ -66,29 +35,15 @@ anchor_right = 0.185
 anchor_bottom = 1.0
 margin_top = 13.8
 margin_right = -0.440002
+alignment = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Button" type="Button" parent="UI/VBoxContainer"]
+margin_top = 580.0
 margin_right = 189.0
-margin_bottom = 20.0
-text = "Flor 1"
+margin_bottom = 600.0
+text = "Randomize!"
 script = ExtResource( 3 )
-plant_path = NodePath("../../../Plant")
-
-[node name="Button2" type="Button" parent="UI/VBoxContainer"]
-margin_top = 24.0
-margin_right = 189.0
-margin_bottom = 44.0
-text = "Flor 2"
-script = ExtResource( 3 )
-plant_path = NodePath("../../../Plant2")
-
-[node name="Button3" type="Button" parent="UI/VBoxContainer"]
-margin_top = 48.0
-margin_right = 189.0
-margin_bottom = 68.0
-text = "Flor 3"
-script = ExtResource( 3 )
-plant_path = NodePath("../../../Plant3")
+plant_path = NodePath("../../../Plant4")
