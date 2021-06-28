@@ -3,37 +3,28 @@ extends MeshInstance
 export(PackedScene) var plant_scene;
 
 var grid_width : int = 10 # in units
-var grid_height : int = 10 # in units
-var ground_height : int = 1 # in meters
+var grid_depth : int = 10 # in units
 var cell_size : float = 1 # in meters
 var grid = []
 
-var offset: Vector3 = Vector3.ZERO
+var ground_mesh
 
 func _ready():
 	create_grid()
 
 func create_grid():
 	# make ground geometry
-	var cube_mesh = CubeMesh.new()
-	cube_mesh.size = Vector3(grid_width*cell_size, ground_height, grid_height*cell_size)
-	mesh = cube_mesh
-	create_convex_collision() # not ideal but ok
+	draw_ground()
 
 	# make grid matrix
 	for x in range(grid_width):
 		grid.append([])
-		for _y in range(grid_height):
+		for _y in range(grid_depth):
 			grid[x].append(-1)
-
-	var offset_x = global_transform.origin.x - grid_width/2.0
-	var offset_z = global_transform.origin.z - grid_height/2.0
-	offset = Vector3(offset_x, 0, offset_z)
 	
 func interact(var pos: Vector3):
-	var fixed_pos = pos - offset
-	var x = clamp(floor(fixed_pos.x), 0, grid_width-1)
-	var z = clamp(floor(fixed_pos.z), 0, grid_height-1)
+	var x = clamp(floor(pos.x), 0, grid_width-1)
+	var z = clamp(floor(pos.z), 0, grid_depth-1)
 
 	var index = grid[x][z]
 	if index == -1:
@@ -43,7 +34,7 @@ func interact(var pos: Vector3):
 
 func add_plant(var x: int, var z: int):
 	var new_plant = plant_scene.instance()
-	new_plant.global_transform.origin = Vector3(x*cell_size, ground_height/2.0, z*cell_size)
+	new_plant.global_transform.origin = Vector3(x*cell_size, 0, z*cell_size)
 	add_child(new_plant)
 	grid[x][z] = new_plant.get_index()
 
@@ -51,4 +42,40 @@ func remove_plant(var x: int, var z: int):
 	var index = grid[x][z]
 	get_child(index).queue_free()
 	grid[x][z] = -1
+
+func draw_ground():
+	ground_mesh = ArrayMesh.new()
+	var arr = []
+	arr.resize(Mesh.ARRAY_MAX)
+
+	# PoolVectorXXArrays for mesh construction.
+	var verts = PoolVector3Array()
+	var uvs = PoolVector2Array()
+	var normals = PoolVector3Array()
+	var indices = PoolIntArray()
+
+	## GENERATE MESH ##
+	verts.append(Vector3(0, 0, 0))
+	verts.append(Vector3(grid_width, 0, 0))
+	verts.append(Vector3(grid_width, 0, grid_depth))
+	verts.append(Vector3(0, 0, grid_depth))
+
+	uvs.append(Vector2(0,0))
+	uvs.append(Vector2(1,0))
+	uvs.append(Vector2(1,1))
+	uvs.append(Vector2(0,1))
+
+	normals.append_array([Vector3.UP, Vector3.UP, Vector3.UP, Vector3.UP])
+	indices.append_array([0,1,3,1,2,3])
 	
+	# Assign arrays to mesh array.
+	arr[Mesh.ARRAY_VERTEX] = verts
+	arr[Mesh.ARRAY_TEX_UV] = uvs
+	arr[Mesh.ARRAY_NORMAL] = normals
+	arr[Mesh.ARRAY_INDEX] = indices
+
+	# Create mesh surface from mesh array.
+	ground_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr) # No blendshapes or compression used.
+	mesh = ground_mesh
+	var col_shape : CollisionShape = get_node("StaticBody/CollisionShape")
+	col_shape.shape = mesh.create_convex_shape() # not ideal but ok
