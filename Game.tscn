@@ -1,20 +1,33 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=9 format=2]
 
-[ext_resource path="res://materials/myMat.tres" type="Material" id=2]
+[ext_resource path="res://source/GardenGrid.gd" type="Script" id=1]
+[ext_resource path="res://plant.tscn" type="PackedScene" id=2]
 [ext_resource path="res://source/ShowFlower.gd" type="Script" id=3]
 [ext_resource path="res://source/RandomPlant.gd" type="Script" id=4]
+[ext_resource path="res://source/PlantPlacer.gd" type="Script" id=5]
+[ext_resource path="res://materials/plantMat.tres" type="Material" id=6]
+[ext_resource path="res://materials/groundMat.tres" type="Material" id=7]
 
 [sub_resource type="ArrayMesh" id=1]
 
 [node name="Root" type="Spatial"]
 
 [node name="Camera" type="Camera" parent="."]
-transform = Transform( 1, 0, 0, 0, 0.794627, 0.607098, 0, -0.607098, 0.794627, -1.90735e-06, 77.807, 59.0163 )
+transform = Transform( 1, 0, 0, 0, 0.794627, 0.607098, 0, -0.607098, 0.794627, -1.90735e-06, 8.40271, 10.4874 )
+script = ExtResource( 5 )
+grid_path = NodePath("../GardenGrid")
 
 [node name="DirectionalLight" type="DirectionalLight" parent="."]
+transform = Transform( 1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0 )
+
+[node name="GardenGrid" type="MeshInstance" parent="."]
+material_override = ExtResource( 7 )
+script = ExtResource( 1 )
+plant_scene = ExtResource( 2 )
 
 [node name="Plant4" type="MeshInstance" parent="."]
-material_override = ExtResource( 2 )
+transform = Transform( 0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0 )
+material_override = ExtResource( 6 )
 mesh = SubResource( 1 )
 script = ExtResource( 4 )
 

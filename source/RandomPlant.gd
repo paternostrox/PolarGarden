@@ -16,11 +16,11 @@ onready var flower_exp = Expression.new()
 var plant_mesh
 var stalktop_pos
 
-func toggle_visible():
-	visible = !visible
-
 func _ready():
 	draw_random_plant()
+
+func _process(delta):
+	global_rotate(Vector3.UP,delta)
 
 func draw_random_plant():
 	get_random_values()
