@@ -2,8 +2,8 @@ extends MeshInstance
 
 export(PackedScene) var plant_scene;
 
-var grid_width : int = 10 # in units
-var grid_depth : int = 10 # in units
+var grid_width : int = 2 # in units
+var grid_depth : int = 2 # in units
 var cell_size : float = 1 # in meters
 var grid = []
 
@@ -20,28 +20,28 @@ func create_grid():
 	for x in range(grid_width):
 		grid.append([])
 		for _y in range(grid_depth):
-			grid[x].append(-1)
+			grid[x].append("")
 	
 func interact(var pos: Vector3):
 	var x = clamp(floor(pos.x), 0, grid_width-1)
 	var z = clamp(floor(pos.z), 0, grid_depth-1)
 
-	var index = grid[x][z]
-	if index == -1:
+	var name = grid[x][z]
+	if name.empty():
 		add_plant(x,z)
 	else:
 		remove_plant(x,z)
 
 func add_plant(var x: int, var z: int):
 	var new_plant = plant_scene.instance()
-	new_plant.global_transform.origin = Vector3(x*cell_size, 0, z*cell_size)
+	new_plant.global_transform.origin = Vector3(x*cell_size + cell_size/2.0, 0, z*cell_size + cell_size/2.0)
 	add_child(new_plant)
-	grid[x][z] = new_plant.get_index()
+	grid[x][z] = new_plant.name
 
 func remove_plant(var x: int, var z: int):
-	var index = grid[x][z]
-	get_child(index).queue_free()
-	grid[x][z] = -1
+	var path = grid[x][z]
+	get_node(path).queue_free()
+	grid[x][z] = ""
 
 func draw_ground():
 	ground_mesh = ArrayMesh.new()

@@ -2,8 +2,8 @@ extends MeshInstance
 
 var rng = RandomNumberGenerator.new()
 
-var tube_radius : float = 1
-var point_amount : int = 6
+var tube_radius : float = 0.5
+var point_amount : int = 3
 var stalk_length : float
 var flower_length : float
 
@@ -37,7 +37,7 @@ func get_random_values():
 		0:
 			# boundaries to values (2 per value)
 			var boundaries = [
-				4,16, # a
+				4,4, # a
 				2,8, # b
 				4,16, # c
 				2,6 # k
