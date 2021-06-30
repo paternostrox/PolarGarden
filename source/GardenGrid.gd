@@ -2,8 +2,10 @@ extends MeshInstance
 
 export(PackedScene) var plant_scene;
 
-var grid_width : int = 2 # in units
-var grid_depth : int = 2 # in units
+var rng = RandomNumberGenerator.new()
+
+var grid_width : int = 5 # in units
+var grid_depth : int = 5 # in units
 var cell_size : float = 1 # in meters
 var grid = []
 
@@ -21,6 +23,18 @@ func create_grid():
 		grid.append([])
 		for _y in range(grid_depth):
 			grid[x].append("")
+
+func randomize():
+	for x in range(grid_width):
+		for z in range(grid_depth):
+			var name = grid[x][z]
+			if !name.empty():
+				remove_plant(x,z)
+			rng.randomize()
+			var num = rng.randi_range(0,1)
+			if num == 1:
+				add_plant(x,z)
+				
 	
 func interact(var pos: Vector3):
 	var x = clamp(floor(pos.x), 0, grid_width-1)

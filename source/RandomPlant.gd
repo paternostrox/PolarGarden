@@ -8,6 +8,7 @@ var stalk_length : float
 var flower_length : float
 
 var stalk_eq : String
+var stalk_disturbance_eq : String
 var flower_eq : String
 
 onready var stalk_exp = Expression.new()
@@ -19,8 +20,8 @@ var stalktop_pos
 func _ready():
 	draw_random_plant()
 
-func _process(delta):
-	global_rotate(Vector3.UP,delta)
+# func _process(delta):
+# 	global_rotate(Vector3.UP,delta)
 
 func draw_random_plant():
 	get_random_values()
@@ -28,53 +29,53 @@ func draw_random_plant():
 
 func get_random_values():
 	rng.randomize()
-	#var stalk_type = rng.randi_range(0, 1)
-	var stalk_type = 0
+	var stalk_type = rng.randi_range(0, 1)
+	#var stalk_type = 1
+
+	var boundaries = []
+	var vals = []
 
 	# CHOOSE STALK TYPE
 	match stalk_type:
 		# 1 SCREW (t): R → R³, t ↦ ( a·sin(k·t), b·t, c·cos(k·t))
 		0:
 			# boundaries to values (2 per value)
-			var boundaries = [
-				4,4, # a
+			boundaries = [
+				1,4, # a
 				2,8, # b
 				4,16, # c
 				2,6 # k
 			]
-
-			var vals = PoolRealArray()
-
-			# Get random values for stalk (within the boundaries)
-			for i in range(boundaries.size()/2):
-				rng.randomize()
-				vals.append(rng.randf_range(boundaries[i],boundaries[i+1]))
+			vals = get_values_inrange(boundaries)
 
 			stalk_eq = "Vector3(%f*sin(%f*t), %f*t, %f*cos(%f*t))" % [vals[0], vals[3], vals[1], vals[0], vals[3]]
 			
 			var stalk_factor = 1/(vals[1]*0.3)
 			rng.randomize()
-			stalk_length = rng.randf_range(10*stalk_factor, 15*stalk_factor)
+			stalk_length = rng.randf_range(8*stalk_factor, 16*stalk_factor)
 
 		# 2 EXP (t): R → R³, t ↦ (a.t, b·ease(c.t, d), c·cos(k·t))
 		1:
 			# boundaries to values (2 per value)
-			var boundaries = [
+			boundaries = [
 				4,16, # a
-				2,8, # b
+				2,8 # b
 			]
+			vals = get_values_inrange(boundaries)
 
-			var vals = PoolRealArray()
-
-			# Get random values for stalk (within the boundaries)
-			for i in range(boundaries.size()/2):
-				rng.randomize()
-				vals.append(rng.randf_range(boundaries[i],boundaries[i+1]))
-
-			#stalk_eq = "Vector3(0, 50*ease(t/10, 0.2), 2*t)" % [vals[0], vals[3], vals[1], vals[2], vals[3]] # REVIEW THIS
+			stalk_eq = "Vector3(0, 50*ease(t/10, 0.2), 0)" # REVIEW THIS
 			
 			rng.randomize()
-			stalk_length = rng.rand_range(10, 70)
+			stalk_length = rng.randf_range(5, 10)
+
+	# STALK DISTURBANCE
+
+	boundaries = [
+		1,4
+	]
+	vals = get_values_inrange(boundaries)
+
+	stalk_disturbance_eq = "Vector3(sin(%f*t),sin(%f*t),sin(%f*t))" % [vals[0], vals[0], vals[0]]
 
 	# CHOOSE FLOWER TYPE
 	rng.randomize()
@@ -84,18 +85,12 @@ func get_random_values():
 	match flower_type:
 		# 1 Spherical Rational Polar (theta, 1)
 		0:
-			var boundaries = [
-				8,20, # a
+			boundaries = [
+				4,12, # a
 				1,10, # n
-				1,10, # d
+				1,10 # d
 			]
-
-			var vals = PoolIntArray()
-
-			# Get random values for stalk (within the boundaries)
-			for i in range(boundaries.size()/2):
-				rng.randomize()
-				vals.append(rng.randi_range(boundaries[i],boundaries[i+1]))
+			vals = get_values_inrange(boundaries)
 
 			flower_eq = "spherical2cartesian(Vector3(%f*sin(%f*theta), theta, 1))" % [vals[0], vals[1]]
 			
@@ -104,12 +99,22 @@ func get_random_values():
 			
 		# 2 Spherical Irrational Polar
 
+func get_values_inrange(var boundaries):
+	var vals = PoolIntArray()
+	# Get random values (within the boundaries)
+	for i in range(boundaries.size()/2):
+		rng.randomize()
+		vals.append(rng.randf_range(boundaries[i],boundaries[i+1]))
+	return vals
+	
+
 func draw_plant():
 	plant_mesh = ArrayMesh.new()
 	mesh = plant_mesh
 
 	# Build stalk expression
-	var error = stalk_exp.parse(stalk_eq, ["t"])
+	var stalk = stalk_eq + " + " + stalk_disturbance_eq
+	var error = stalk_exp.parse(stalk, ["t"])
 	if error != OK:
 		push_error(stalk_exp.get_error_text())
 		return
