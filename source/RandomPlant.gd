@@ -18,17 +18,22 @@ var plant_mesh
 var stalktop_pos
 
 func _ready():
+	rng.randomize()
 	draw_random_plant()
 
 # func _process(delta):
 # 	global_rotate(Vector3.UP,delta)
 
 func draw_random_plant():
-	get_random_values()
+	generate_plant()
 	draw_plant()
+	change_color()
 
-func get_random_values():
-	rng.randomize()
+func change_color():
+	material_override = material_override.duplicate()
+	material_override.albedo_color = Color.from_hsv(rng.randf_range(0,1),rng.randf_range(.7,.95),rng.randf_range(.7,.95))
+
+func generate_plant():
 	var stalk_type = rng.randi_range(0, 1)
 	#var stalk_type = 1
 
@@ -51,21 +56,19 @@ func get_random_values():
 			stalk_eq = "Vector3(%f*sin(%f*t), %f*t, %f*cos(%f*t))" % [vals[0], vals[3], vals[1], vals[0], vals[3]]
 			
 			var stalk_factor = 1/(vals[1]*0.3)
-			rng.randomize()
 			stalk_length = rng.randf_range(8*stalk_factor, 16*stalk_factor)
 
 		# 2 EXP (t): R → R³, t ↦ (a.t, b·ease(c.t, d), c·cos(k·t))
 		1:
 			# boundaries to values (2 per value)
 			boundaries = [
-				4,16, # a
+				30,60, # a
 				2,8 # b
 			]
 			vals = get_values_inrange(boundaries)
 
-			stalk_eq = "Vector3(0, 50*ease(t/10, 0.2), 0)" # REVIEW THIS
+			stalk_eq = "Vector3(0, %f*ease(t/10, 0.2), 0)" % [vals[0]] # REVIEW THIS
 			
-			rng.randomize()
 			stalk_length = rng.randf_range(5, 10)
 
 	# STALK DISTURBANCE
@@ -78,7 +81,6 @@ func get_random_values():
 	stalk_disturbance_eq = "Vector3(sin(%f*t),sin(%f*t),sin(%f*t))" % [vals[0], vals[0], vals[0]]
 
 	# CHOOSE FLOWER TYPE
-	rng.randomize()
 	#var flower_type = rng.randi_range(0, 1)
 	var flower_type = 0
 
@@ -103,7 +105,6 @@ func get_values_inrange(var boundaries):
 	var vals = PoolIntArray()
 	# Get random values (within the boundaries)
 	for i in range(boundaries.size()/2):
-		rng.randomize()
 		vals.append(rng.randf_range(boundaries[i],boundaries[i+1]))
 	return vals
 	

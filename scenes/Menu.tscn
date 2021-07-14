@@ -1,0 +1,81 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://source/MainMenu.gd" type="Script" id=1]
+
+[node name="Node2D" type="Node"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+anchor_mode = 0
+
+[node name="Control" type="Control" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Panel" type="Panel" parent="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Control/Panel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -455.436
+margin_top = -139.868
+margin_right = 449.78
+margin_bottom = -20.868
+text = "The Polar Garden"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/Panel"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -124.0
+margin_top = 128.0
+margin_right = 119.0
+margin_bottom = 244.0
+custom_constants/separation = 5
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Button" type="Button" parent="Control/Panel/VBoxContainer"]
+margin_right = 243.0
+margin_bottom = 20.0
+text = "Begin"
+
+[node name="Button2" type="Button" parent="Control/Panel/VBoxContainer"]
+margin_top = 25.0
+margin_right = 243.0
+margin_bottom = 45.0
+text = "Exit"
+
+[node name="Label2" type="Label" parent="Control/Panel"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_left = 30.0
+margin_top = -160.0
+margin_right = 230.335
+margin_bottom = -30.0
+text = "Disclaimer: This game has an experimental nature and is not as polished as one would expect. The objetive of this experience is to explore the beauty of mathematics and phyllotaxis in a new environment. "
+valign = 2
+autowrap = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[connection signal="button_down" from="Control/Panel/VBoxContainer/Button" to="Control/Panel" method="load_game"]
+[connection signal="button_down" from="Control/Panel/VBoxContainer/Button2" to="Control/Panel" method="exit_game"]
