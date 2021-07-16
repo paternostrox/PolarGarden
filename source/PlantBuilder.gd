@@ -54,8 +54,8 @@ static func generate_plant(var rng):
     stalk_disturbance_eq = "Vector3(sin(%f*t),sin(%f*t),sin(%f*t))" % [vals[0], vals[0], vals[0]]
 
     # CHOOSE FLOWER TYPE
-    #var flower_type = rng.randi_range(0, 1)
-    var flower_type = 0
+    var flower_type = rng.randi_range(0, 1)
+    #var flower_type = 0
 
     match flower_type:
         # 1 Spherical Rational Polar (theta, 1)
@@ -72,7 +72,20 @@ static func generate_plant(var rng):
             var p = 2 if ((vals[1]*vals[2]) % 2 == 0) else 1 
             flower_length = PI * vals[2] * p
 
-        # 1 Spherical Positive Rational Polar (theta, 1)
+        # 2 Spherical Positive Rational Polar (theta, 1)
+        1:
+            boundaries = [
+                4,12, # a
+                5,15, # n
+                1,10 # d
+            ]
+            vals = get_values_inrange(boundaries, rng)
+
+            flower_eq = "spherical2cartesian(Vector3(%f*abs(sin(%f*theta)), theta, 1))" % [vals[0], vals[1]]
+            
+            var p = 2 if ((vals[1]*vals[2]) % 2 == 0) else 1 
+            flower_length = PI * vals[2] * p
+
             
         # 3 Spherical Irrational Polar
 
