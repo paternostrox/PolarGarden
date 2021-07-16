@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://scenes/plant.tscn" type="PackedScene" id=1]
 [ext_resource path="res://source/PlantPlacer.gd" type="Script" id=2]
@@ -7,26 +7,14 @@
 [ext_resource path="res://materials/plantMat.tres" type="Material" id=5]
 [ext_resource path="res://source/OrbitCamera.gd" type="Script" id=6]
 [ext_resource path="res://source/GardenGrid.gd" type="Script" id=7]
-[ext_resource path="res://source/RandomPlant.gd" type="Script" id=8]
+[ext_resource path="res://source/ProceduralPlant.gd" type="Script" id=8]
+[ext_resource path="res://source/EqDisplay.gd" type="Script" id=9]
 
 [sub_resource type="ConvexPolygonShape" id=1]
 
 [sub_resource type="ArrayMesh" id=2]
 
 [node name="Root" type="Spatial"]
-
-[node name="Orbit" type="Spatial" parent="."]
-script = ExtResource( 6 )
-maxPitch = 0.0
-minPitch = -60.0
-maxZoom = 10.0
-horizontalSensitivity = 0.01
-camYOffset = 3.0
-target = NodePath("../GardenGrid/TARGET")
-
-[node name="Camera" type="Camera" parent="Orbit"]
-script = ExtResource( 2 )
-grid_path = NodePath("../../GardenGrid")
 
 [node name="DirectionalLight" type="DirectionalLight" parent="."]
 transform = Transform( 1, 0, 0, 0, 0.707107, -0.707107, 0, 0.707107, 0.707107, 0, 0, 0 )
@@ -50,8 +38,21 @@ visible = false
 material_override = ExtResource( 5 )
 mesh = SubResource( 2 )
 script = ExtResource( 8 )
+flower_length = 100.0
+stalk_eq = "Vector3(0, 30*ease(t/10, 0.2), 0)"
+stalk_disturbance_eq = "Vector3(0,0,0)"
+flower_eq = "spherical2cartesian(Vector3(10*abs(sin(PI*theta)), theta, 1))+spherical2cartesian(Vector3(10*sin(4*theta), theta, 1))"
 
-[node name="UI" type="Control" parent="."]
+[node name="ViewportContainer" type="ViewportContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+stretch = true
+stretch_shrink = 4
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="UI" type="Control" parent="ViewportContainer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = -1.5
@@ -62,7 +63,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI"]
+[node name="VBoxContainer" type="VBoxContainer" parent="ViewportContainer/UI"]
 anchor_top = -0.023
 anchor_right = 0.185
 anchor_bottom = 1.0
@@ -73,15 +74,15 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Button" type="Button" parent="UI/VBoxContainer"]
+[node name="Button" type="Button" parent="ViewportContainer/UI/VBoxContainer"]
 margin_top = 580.0
 margin_right = 189.0
 margin_bottom = 600.0
 text = "Randomize!"
 script = ExtResource( 4 )
-garden_path = NodePath("../../../GardenGrid")
+garden_path = NodePath("../../../../GardenGrid")
 
-[node name="Label" type="Label" parent="UI"]
+[node name="Label" type="Label" parent="ViewportContainer/UI"]
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -99,3 +100,59 @@ autowrap = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="ViewportContainer/UI"]
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -600.0
+margin_top = 10.0
+margin_right = -10.0
+margin_bottom = -10.0
+custom_constants/separation = 20
+script = ExtResource( 9 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+grid_path = NodePath("../../../GardenGrid")
+
+[node name="Label" type="Label" parent="ViewportContainer/UI/VBoxContainer2"]
+margin_right = 590.0
+margin_bottom = 14.0
+text = "EQUATION"
+align = 2
+autowrap = true
+
+[node name="Label2" type="Label" parent="ViewportContainer/UI/VBoxContainer2"]
+margin_top = 34.0
+margin_right = 590.0
+margin_bottom = 48.0
+text = "EQUATION"
+align = 2
+autowrap = true
+
+[node name="Label3" type="Label" parent="ViewportContainer/UI/VBoxContainer2"]
+margin_top = 68.0
+margin_right = 590.0
+margin_bottom = 82.0
+text = "EQUATION"
+align = 2
+autowrap = true
+
+[node name="Viewport" type="Viewport" parent="ViewportContainer"]
+size = Vector2( 256, 150 )
+handle_input_locally = false
+render_target_update_mode = 3
+
+[node name="Orbit" type="Spatial" parent="ViewportContainer/Viewport"]
+script = ExtResource( 6 )
+maxPitch = 0.0
+minPitch = -60.0
+maxZoom = 10.0
+horizontalSensitivity = 0.01
+camYOffset = 3.0
+target = NodePath("../../../GardenGrid/TARGET")
+
+[node name="Camera" type="Camera" parent="ViewportContainer/Viewport/Orbit"]
+script = ExtResource( 2 )
+grid_path = NodePath("../../../../GardenGrid")

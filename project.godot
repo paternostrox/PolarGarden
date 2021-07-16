@@ -13,9 +13,15 @@ _global_script_classes=[ {
 "class": "MathTools",
 "language": "GDScript",
 "path": "res://source/MathTools.gd"
+}, {
+"base": "Reference",
+"class": "PlantGen",
+"language": "GDScript",
+"path": "res://source/PlantBuilder.gd"
 } ]
 _global_script_class_icons={
-"MathTools": ""
+"MathTools": "",
+"PlantGen": ""
 }
 
 [application]

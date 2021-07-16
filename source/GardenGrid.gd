@@ -1,6 +1,6 @@
 extends MeshInstance
 
-export(PackedScene) var plant_scene;
+export(PackedScene) var plant_scene
 
 var rng = RandomNumberGenerator.new()
 
@@ -10,6 +10,8 @@ var cell_size : float = 1 # in meters
 var grid = []
 
 var ground_mesh
+
+signal flower_added(strings)
 
 func _ready():
 	create_grid()
@@ -51,6 +53,10 @@ func add_plant(var x: int, var z: int):
 	new_plant.global_transform.origin = Vector3(x*cell_size + cell_size/2.0, 0, z*cell_size + cell_size/2.0)
 	add_child(new_plant)
 	grid[x][z] = new_plant.name
+	var plant_data = PlantGen.generate_plant(rng)
+	new_plant.get_child(0).draw_plant(plant_data)
+	emit_signal("flower_added", [plant_data[0], plant_data[1], plant_data[2]])
+	
 
 func remove_plant(var x: int, var z: int):
 	var path = grid[x][z]
