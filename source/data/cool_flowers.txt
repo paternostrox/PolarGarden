@@ -3,9 +3,16 @@ v2_to_v3(0, polar2cartesian(5*sin(4*theta), theta))
 spherical2cartesian(Vector3(10*sin(4*theta), theta, 1))
 spherical2cartesian(Vector3(10*sin((PI)*theta), theta, 1))
 
+# great
+flower_eq = "spherical2cartesian(Vector3(%f*sin(%f/%f*theta), theta, theta))" % [vals[0], vals[1], vals[2]]
+
 # very nice
 spherical2cartesian(Vector3(10*sin((PI)*theta), theta, theta))
 spherical2cartesian(Vector3(10*abs(sin(PI*theta)), theta, 1))
+
+spherical2cartesian(Vector3(%f*abs(sin(%f*theta)), theta, sin(theta)))
+spherical2cartesian(Vector3(%f*abs(sin(%f*theta)), theta, 2*sin(theta)))
+spherical2cartesian(Vector3(%f*sin(%f*theta), theta, sin(8*theta)))
 
 # crazy shit
 spherical2cartesian(Vector3(10*abs(sin(PI*theta)), theta, 1))+spherical2cartesian(Vector3(10*sin(4*theta), theta, 1))
