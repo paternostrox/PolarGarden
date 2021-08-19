@@ -28,13 +28,19 @@ func _process(delta):
 		draw_plant()
 
 func draw_plant():
+
+	var head_count = 2
+
 	mesh = ArrayMesh.new()
 
 	var stalk_data = generate_stalk()
-	var head_data = generate_head()
-
 	stalk_top = draw_equation(mesh, stalk_data[0], Vector3.ZERO, stalk_data[1])
-	draw_equation(mesh, head_data[0], stalk_top, head_data[1])
+	mesh.surface_set_material(0, make_material(.3,.4,.75,.95,.8,.9))
+
+	for i in range(1,head_count + 1):
+		var head_data = generate_head()
+		draw_equation(mesh, head_data[0], stalk_top, head_data[1])
+		mesh.surface_set_material(i, make_material(0,1,.75,.95,.8,.9))
 
 
 func generate_stalk():
@@ -102,12 +108,12 @@ func generate_head():
 			0:
 				boundaries = [
 					4,12, # a
-					1,10, # n
-					1,10 # d
+					1,20, # n
+					1,20 # d
 				]
 				vals = get_values_inrange(boundaries)
 	
-				flower_eq = "spherical2cartesian(Vector3(%f*sin((%f/%f)*t), t, t))" % [vals[0], vals[1], vals[2]]
+				flower_eq = "spherical2cartesian(Vector3(%f*cos(%f/%f*t), t, t))" % [vals[0], vals[1], vals[2]]
 				
 				var p = 2 if ((vals[1]*vals[2]) % 2 == 0) else 1
 				flower_length = PI * 2 * vals[2]
@@ -139,14 +145,12 @@ func change_color():
 	material_override = material_override.duplicate()
 	material_override.albedo_color = Color.from_hsv(rng.randf_range(0,1),rng.randf_range(.7,.95),rng.randf_range(.8,.9))
 
-func make_materials(n: int) -> Array:	# Generates an array of SpatialMaterials with given length of random colors
-	var return_array = []
-	for _i in range(n):
-		var mat = SpatialMaterial.new()
-		var color = Color.from_hsv(rng.randf_range(0,1),rng.randf_range(.7,.95),rng.randf_range(.8,.9))
-		mat.albedo_color = color
-		return_array.push_back(mat)
-	return return_array
+func make_material(h_lower: float, h_upper: float, s_lower: float, s_upper: float, v_lower: float, v_upper: float):
+	var mat = SpatialMaterial.new()
+	var color = Color.from_hsv(rng.randf_range(h_lower,h_upper),rng.randf_range(s_lower,s_upper),rng.randf_range(v_lower,v_upper))
+	mat.albedo_color = color
+	return mat
+		
 
 # WARNING (BUG): Mesh rings are getting rotated on XZ axis, so in some cases the geometry breaks
 func draw_tube(mesh: ArrayMesh, expression: Expression, radius: float, length: float, sampling: float) -> Vector3:

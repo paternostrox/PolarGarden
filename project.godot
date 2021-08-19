@@ -36,6 +36,10 @@ config/name="polargarden"
 run/main_scene="res://scenes/Menu.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+GameVars="*res://source/singletons/GameVars.gd"
+
 [debug]
 
 gdscript/warnings/return_value_discarded=false

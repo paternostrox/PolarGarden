@@ -44,11 +44,30 @@ func _input(event) -> void:
 		else:
 			drag = false
 
+	# Camera Rotation (Mouse Wheel)
 	if event is InputEventMouseMotion and drag:
 		# Rotate the rig around the target
 		rotate_y(-event.relative.x * horizontalSensitivity)
 		rotation.x = clamp(rotation.x - event.relative.y * verticalSensitivity, deg2rad(minPitch), deg2rad(maxPitch))
 		orthonormalize()
+	
+	# Camera Movement (W,A,S,D)
+	if event is InputEventKey:
+		if event.pressed:
+			var dir: Vector3
+			if event.scancode == KEY_W:
+				dir = global_transform.basis.xform(Vector3.FORWARD)
+			elif event.scancode == KEY_S:
+				dir = global_transform.basis.xform(Vector3.BACK)
+			elif event.scancode == KEY_D:
+				dir = global_transform.basis.xform(Vector3.RIGHT)
+			elif event.scancode == KEY_A:
+				dir = global_transform.basis.xform(Vector3.LEFT)
+			else:
+				return
+			dir = Vector3(dir.x,0,dir.z)
+			dir = dir.normalized()
+			_camTarget.global_translate(dir)
 
 func _process(delta) -> void:
 	# zoom the camera accordingly
