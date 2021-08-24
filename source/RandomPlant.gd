@@ -2,62 +2,61 @@ extends MeshInstance
 
 var rng = RandomNumberGenerator.new()
 
-var tube_radius : float = 0.5
+var tube_radius : float = 0.3
 var point_amount : int = 3
 
 onready var stalk_exp = Expression.new()
 onready var flower_exp = Expression.new()
 
-var plant_mesh
-var stalktop_pos
+var current_plant_data
 
 func _ready():
 	rng.randomize()
-	draw_random_plant()
 
-# func _process(delta):
-# 	global_rotate(Vector3.UP,delta)
+func draw_plant(plant_data: PlantData):
 
-func draw_random_plant():
-	#generate_plant()
-	#draw_plant()
-	change_color()
+	current_plant_data = plant_data
 
-func change_color():
-	material_override = material_override.duplicate()
-	material_override.albedo_color = Color.from_hsv(rng.randf_range(0,1),rng.randf_range(.7,.95),rng.randf_range(.8,.9))
+	mesh = ArrayMesh.new()
+
+	var stalk_top = draw_equation(mesh, plant_data.piece_eqs[0], Vector3.ZERO, plant_data.piece_lengths[0])
+	mesh.surface_set_material(0, make_material(.3,.4,.75,.95,.7,.85))
+
+	var head_count = plant_data.piece_eqs.size() - 1
+
+	for i in range(1,head_count + 1):
+		draw_equation(mesh, plant_data.piece_eqs[i], stalk_top, plant_data.piece_lengths[i])
+		mesh.surface_set_material(i, make_material(0,1,.75,.95,.8,.9))
 	
+func draw_equation(mesh: ArrayMesh, eq: String, start_point: Vector3, length: float):
 
-func draw_plant(var values):
-	var stalk_eq = values[0]
-	var stalk_disturbance_eq = values[1]
-	var flower_eq = values[2]
-	var stalk_length = values[3]
-	var flower_length = values[4]
-
-	plant_mesh = ArrayMesh.new()
-	mesh = plant_mesh
-
-	# Build stalk expression
-	var stalk = stalk_eq + " + " + stalk_disturbance_eq
-	var error = stalk_exp.parse(stalk, ["t"])
+	# Build expression
+	var expression = Expression.new()
+	var error = expression.parse(eq + " + " + var2str(start_point), ["t"])
 	if error != OK:
-		push_error(stalk_exp.get_error_text())
+		push_error(expression.get_error_text())
 		return
 
-	# Build flower expression
-	var flower = flower_eq + " + stalktop_pos"
-	error = flower_exp.parse(flower, ["theta"])
-	if error != OK:
-		push_error(flower_exp.get_error_text())
-		return
+	# Draw
+	var end_point = draw_tube(mesh, expression, tube_radius, length, .05)
+	return end_point
+		
+func get_values_inrange(var boundaries):
+	var vals = PoolIntArray()
+	# Get random values (within the boundaries)
+	for i in range(boundaries.size()/2):
+		vals.append(rng.randf_range(boundaries[i],boundaries[i+1]))
+	return vals
 
-	# Draw flower
-	stalktop_pos = draw_tube(stalk_exp, tube_radius/2, 0, stalk_length, .05)
-	draw_tube(flower_exp, tube_radius, 0, flower_length, .05)
+func make_material(h_lower: float, h_upper: float, s_lower: float, s_upper: float, v_lower: float, v_upper: float):
+	var mat = SpatialMaterial.new()
+	var color = Color.from_hsv(rng.randf_range(h_lower,h_upper),rng.randf_range(s_lower,s_upper),rng.randf_range(v_lower,v_upper))
+	mat.albedo_color = color
+	return mat
+		
 
-# WARNING (POSSIBLE BUG): Mesh rings are getting rotated on XZ axis, so in some cases the geometry breaks
-func draw_tube(expression: Expression, radius: float, lower: float, upper: float, sampling: float) -> Vector3:
+# WARNING (BUG): Mesh rings are getting rotated on XZ axis, so in some cases the geometry breaks
+func draw_tube(mesh: ArrayMesh, expression: Expression, radius: float, length: float, sampling: float) -> Vector3:
 	var arr = []
 	arr.resize(Mesh.ARRAY_MAX)
 
@@ -68,13 +67,13 @@ func draw_tube(expression: Expression, radius: float, lower: float, upper: float
 	var indices = PoolIntArray()
 
 	## GENERATE MESH ##
-	var max_iterations = (upper - lower) / sampling
+	var max_iterations = length / sampling
 
-	var t_sample = lower
+	var t_sample = 0
 	var bottom_ring = get_ring(expression, t_sample, radius)
 	var top_ring
 	var i = 1
-	while i < max_iterations:
+	while i <= max_iterations:
 		t_sample = i * sampling
 
 		top_ring = get_ring(expression, t_sample, radius)
@@ -114,7 +113,7 @@ func draw_tube(expression: Expression, radius: float, lower: float, upper: float
 	arr[Mesh.ARRAY_INDEX] = indices
 
 	# Create mesh surface from mesh array.
-	plant_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr) # No blendshapes or compression used.
+	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arr) # No blendshapes or compression used.
 
 	# Returns stalk top position
 	return expression.execute([t_sample], self)
@@ -149,6 +148,7 @@ func get_basis(p0: Vector3, p1: Vector3) -> Basis:
 	basis.x = basis.z.cross(basis.y)
 
 	basis = basis.orthonormalized()
+
 	return basis
 
 # (r,theta,phi) -> (x,y,z)

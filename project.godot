@@ -10,24 +10,18 @@ config_version=4
 
 _global_script_classes=[ {
 "base": "Reference",
-"class": "GenEquation",
-"language": "GDScript",
-"path": "res://source/GenEquation.gd"
-}, {
-"base": "Reference",
 "class": "MathTools",
 "language": "GDScript",
 "path": "res://source/MathTools.gd"
 }, {
-"base": "Reference",
-"class": "PlantGen",
+"base": "Node",
+"class": "PlantData",
 "language": "GDScript",
-"path": "res://source/PlantGen.gd"
+"path": "res://source/data types/PlantData.gd"
 } ]
 _global_script_class_icons={
-"GenEquation": "",
 "MathTools": "",
-"PlantGen": ""
+"PlantData": ""
 }
 
 [application]
@@ -39,6 +33,7 @@ config/icon="res://icon.png"
 [autoload]
 
 GameVars="*res://source/singletons/GameVars.gd"
+PlantGeneration="*res://source/singletons/PlantGeneration.gd"
 
 [debug]
 

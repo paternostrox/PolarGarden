@@ -4,8 +4,8 @@ export(PackedScene) var plant_scene
 
 var rng = RandomNumberGenerator.new()
 
-var grid_width : int = 50 # in units
-var grid_depth : int = 50 # in units
+var grid_width : int = 20 # in units
+var grid_depth : int = 20 # in units
 var cell_size : float = 1 # in meters
 var grid = []
 
@@ -50,12 +50,12 @@ func interact(var pos: Vector3):
 
 func add_plant(var x: int, var z: int):
 	var new_plant = plant_scene.instance()
-	new_plant.global_transform.origin = Vector3(x*cell_size + cell_size/2.0, 0, z*cell_size + cell_size/2.0)
+	new_plant.transform.origin = Vector3(x*cell_size + cell_size/2.0, 0, z*cell_size + cell_size/2.0)
 	add_child(new_plant)
 	grid[x][z] = new_plant.name
-	var plant_data = PlantGen.generate_plant(rng)
+	var plant_data = PlantGeneration.generate_plant()
 	new_plant.get_child(0).draw_plant(plant_data)
-	emit_signal("flower_added", [plant_data[0], plant_data[1], plant_data[2]])
+	#emit_signal("flower_added", [plant_data[0], plant_data[1], plant_data[2]])
 	
 
 func remove_plant(var x: int, var z: int):
