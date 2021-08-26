@@ -1,7 +1,6 @@
 extends Camera
 
-export(NodePath) var grid_path
-signal ground_interaction(pos)
+signal grid_interaction(requester, pos)
 
 var from
 var to
@@ -10,8 +9,7 @@ var clicked = false
 const ray_length = 100000
 
 func _ready():
-	var grid = get_node(grid_path)
-	connect("ground_interaction", grid, "interact")
+	connect("grid_interaction", Server, "grid_interact")
 
 func _input(event):
 	if event is InputEventMouseButton and event.pressed and event.button_index == 1:
@@ -25,5 +23,5 @@ func _physics_process(_delta):
 		var result = space_state.intersect_ray(from, to)
 		if result:
 			print(result.position)
-			emit_signal("ground_interaction", result.position)
+			emit_signal("grid_interaction", get_instance_id(), result.position)
 		clicked = false

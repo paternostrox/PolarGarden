@@ -8,25 +8,19 @@ var point_amount : int = 3
 onready var stalk_exp = Expression.new()
 onready var flower_exp = Expression.new()
 
-var current_plant_data
-
 func _ready():
 	rng.randomize()
 
-func draw_plant(plant_data: PlantData):
-
-	current_plant_data = plant_data
+func draw_plant(plant_data):
 
 	mesh = ArrayMesh.new()
 
-	var stalk_top = draw_equation(mesh, plant_data.piece_eqs[0], Vector3.ZERO, plant_data.piece_lengths[0])
+	var stalk_top = draw_equation(mesh, plant_data[0], Vector3.ZERO, plant_data[1])
 	mesh.surface_set_material(0, make_material(.3,.4,.75,.95,.7,.85))
 
-	var head_count = plant_data.piece_eqs.size() - 1
-
-	for i in range(1,head_count + 1):
-		draw_equation(mesh, plant_data.piece_eqs[i], stalk_top, plant_data.piece_lengths[i])
-		mesh.surface_set_material(i, make_material(0,1,.75,.95,.8,.9))
+	for i in range(2, plant_data.size(), 2):
+		draw_equation(mesh, plant_data[i], stalk_top, plant_data[i+1])
+		mesh.surface_set_material(i/2, make_material(0,1,.75,.95,.8,.9))
 	
 func draw_equation(mesh: ArrayMesh, eq: String, start_point: Vector3, length: float):
 

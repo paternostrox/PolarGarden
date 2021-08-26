@@ -11,9 +11,9 @@ var grid = []
 
 var ground_mesh
 
-signal flower_added(strings)
-
 func _ready():
+	Server.connect("server_add", self, "add_plant")
+	Server.connect("server_remove", self, "remove_plant")
 	create_grid()
 
 func create_grid():
@@ -26,42 +26,37 @@ func create_grid():
 		for _y in range(grid_depth):
 			grid[x].append("")
 
-func randomize():
-	for x in range(grid_width):
-		for z in range(grid_depth):
-			var name = grid[x][z]
-			if !name.empty():
-				remove_plant(x,z)
-			rng.randomize()
-			var num = rng.randi_range(0,1)
-			if num == 1:
-				add_plant(x,z)
+# func randomize():
+# 	for x in range(grid_width):
+# 		for z in range(grid_depth):
+# 			var name = grid[x][z]
+# 			if !name.empty():
+# 				remove_plant(x,z)
+# 			rng.randomize()
+# 			var num = rng.randi_range(0,1)
+# 			if num == 1:
+# 				add_plant(x,z)
 				
 	
-func interact(var pos: Vector3):
+func world2grid(var pos: Vector3):
 	var x = clamp(floor(pos.x), 0, grid_width-1)
 	var z = clamp(floor(pos.z), 0, grid_depth-1)
+	return [x,z]
 
-	var name = grid[x][z]
-	if name.empty():
-		add_plant(x,z)
-	else:
-		remove_plant(x,z)
 
-func add_plant(var x: int, var z: int):
+func add_plant(plant_data, pos: Vector3):
 	var new_plant = plant_scene.instance()
-	new_plant.transform.origin = Vector3(x*cell_size + cell_size/2.0, 0, z*cell_size + cell_size/2.0)
+	new_plant.transform.origin = Vector3(pos.x*cell_size + cell_size/2.0, 0, pos.z*cell_size + cell_size/2.0)
 	add_child(new_plant)
-	grid[x][z] = new_plant.name
-	var plant_data = PlantGeneration.generate_plant()
+	#grid[x][z] = new_plant.name
 	new_plant.get_child(0).draw_plant(plant_data)
 	#emit_signal("flower_added", [plant_data[0], plant_data[1], plant_data[2]])
 	
 
-func remove_plant(var x: int, var z: int):
-	var path = grid[x][z]
+func remove_plant(pos: Vector3):
+	var path = grid[pos.x][pos.z]
 	get_node(path).queue_free()
-	grid[x][z] = ""
+	#grid[x][z] = ""
 
 func draw_ground():
 	ground_mesh = ArrayMesh.new()

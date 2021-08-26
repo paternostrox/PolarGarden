@@ -4,6 +4,9 @@ var network = NetworkedMultiplayerENet.new()
 var ip = "127.0.0.1"
 var port = 1909
 
+signal server_add(plant_data, pos)
+signal server_remove(pos)
+
 func _ready():
     connect_to_server()
 
@@ -20,10 +23,12 @@ func on_connection_succeeded():
 func on_connection_failed():
     print("Failed to connect!")
 
-func request_plant(requester, pos: Vector3):
-    rpc_id(1, "serve_plant", requester, pos)
+func grid_interact(requester, pos: Vector3):
+    rpc_id(1, "serve_interaction", requester, pos)
 
-remote func return_plant(requester, plant_data: PlantData ,pos: Vector3):
-    # Build plant on pos
-    pass
+remote func return_add(requester, plant_data, pos: Vector3):
+    emit_signal("server_add", plant_data, pos)
+
+remote func return_remove(requester, pos: Vector3):
+    emit_signal("server_remove", pos)
 
