@@ -16,11 +16,11 @@ func draw_plant(plant_data):
 	mesh = ArrayMesh.new()
 
 	var stalk_top = draw_equation(mesh, plant_data[0], Vector3.ZERO, plant_data[1])
-	mesh.surface_set_material(0, make_material(.3,.4,.75,.95,.7,.85))
+	mesh.surface_set_material(0, make_material(plant_data[2]))
 
-	for i in range(2, plant_data.size(), 2):
+	for i in range(3, plant_data.size(), 3):
 		draw_equation(mesh, plant_data[i], stalk_top, plant_data[i+1])
-		mesh.surface_set_material(i/2, make_material(0,1,.75,.95,.8,.9))
+		mesh.surface_set_material(i/3, make_material(plant_data[i+2]))
 	
 func draw_equation(mesh: ArrayMesh, eq: String, start_point: Vector3, length: float):
 
@@ -42,9 +42,8 @@ func get_values_inrange(var boundaries):
 		vals.append(rng.randf_range(boundaries[i],boundaries[i+1]))
 	return vals
 
-func make_material(h_lower: float, h_upper: float, s_lower: float, s_upper: float, v_lower: float, v_upper: float):
+func make_material(color: Color):
 	var mat = SpatialMaterial.new()
-	var color = Color.from_hsv(rng.randf_range(h_lower,h_upper),rng.randf_range(s_lower,s_upper),rng.randf_range(v_lower,v_upper))
 	mat.albedo_color = color
 	return mat
 		

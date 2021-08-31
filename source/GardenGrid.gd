@@ -48,7 +48,7 @@ func add_plant(plant_data, pos: Vector3):
 	var new_plant = plant_scene.instance()
 	new_plant.transform.origin = Vector3(pos.x*cell_size + cell_size/2.0, 0, pos.z*cell_size + cell_size/2.0)
 	add_child(new_plant)
-	#grid[x][z] = new_plant.name
+	grid[pos.x][pos.z] = new_plant.name
 	new_plant.get_child(0).draw_plant(plant_data)
 	#emit_signal("flower_added", [plant_data[0], plant_data[1], plant_data[2]])
 	
@@ -56,7 +56,7 @@ func add_plant(plant_data, pos: Vector3):
 func remove_plant(pos: Vector3):
 	var path = grid[pos.x][pos.z]
 	get_node(path).queue_free()
-	#grid[x][z] = ""
+	grid[pos.x][pos.z] = ""
 
 func draw_ground():
 	ground_mesh = ArrayMesh.new()

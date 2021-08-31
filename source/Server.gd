@@ -31,4 +31,5 @@ remote func return_add(requester, plant_data, pos: Vector3):
 
 remote func return_remove(requester, pos: Vector3):
     emit_signal("server_remove", pos)
+    print("FIRED");
 
