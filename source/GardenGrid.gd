@@ -8,10 +8,12 @@ var grid_width : int = 20 # in units
 var grid_depth : int = 20 # in units
 var cell_size : float = 1 # in meters
 var grid = []
+var grid_size
 
 var ground_mesh
 
 func _ready():
+	Server.connect("server_populate", self, "populate_garden")
 	Server.connect("server_add", self, "add_plant")
 	Server.connect("server_remove", self, "remove_plant")
 	create_grid()
@@ -42,6 +44,14 @@ func world2grid(var pos: Vector3):
 	var x = clamp(floor(pos.x), 0, grid_width-1)
 	var z = clamp(floor(pos.z), 0, grid_depth-1)
 	return [x,z]
+
+func populate_garden(garden_grid):
+	grid_size = garden_grid[0].size()
+	for x in range(grid_size):
+		for z in range(grid_size):
+			print(garden_grid[x][z])
+			JSON.print(garden_grid[x][z])
+
 
 
 func add_plant(plant_data, pos: Vector3):
