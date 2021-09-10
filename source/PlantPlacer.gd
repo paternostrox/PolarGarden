@@ -22,6 +22,6 @@ func _physics_process(_delta):
 		var space_state = get_world().direct_space_state
 		var result = space_state.intersect_ray(from, to)
 		if result:
-			print(result.position)
+			#print(result.position)
 			emit_signal("grid_interaction", get_instance_id(), result.position)
 		clicked = false

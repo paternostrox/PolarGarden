@@ -16,11 +16,11 @@ func draw_plant(plant_data):
 	mesh = ArrayMesh.new()
 
 	var stalk_top = draw_equation(mesh, plant_data[0], Vector3.ZERO, plant_data[1])
-	mesh.surface_set_material(0, make_material(plant_data[2]))
+	mesh.surface_set_material(0, make_material(plant_data[2],plant_data[3],plant_data[4]))
 
-	for i in range(3, plant_data.size(), 3):
+	for i in range(5, plant_data.size(), 5):
 		draw_equation(mesh, plant_data[i], stalk_top, plant_data[i+1])
-		mesh.surface_set_material(i/3, make_material(plant_data[i+2]))
+		mesh.surface_set_material(i/5, make_material(plant_data[i+2],plant_data[i+3],plant_data[i+4]))
 	
 func draw_equation(mesh: ArrayMesh, eq: String, start_point: Vector3, length: float):
 
@@ -42,7 +42,8 @@ func get_values_inrange(var boundaries):
 		vals.append(rng.randf_range(boundaries[i],boundaries[i+1]))
 	return vals
 
-func make_material(color: Color):
+func make_material(var h, var s, var v):
+	var color = Color.from_hsv(h,s,v)
 	var mat = SpatialMaterial.new()
 	mat.albedo_color = color
 	return mat
@@ -137,7 +138,7 @@ func get_basis(p0: Vector3, p1: Vector3) -> Basis:
 	# make my basis
 	var basis = Basis()
 	basis.y = p1-p0 # this is the tangent line
-	basis.z = basis.y.cross(Vector3.RIGHT)
+	basis.z = basis.y.cross(Vector3.BACK)
 	basis.x = basis.z.cross(basis.y)
 
 	basis = basis.orthonormalized()

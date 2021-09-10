@@ -17,6 +17,7 @@ func _ready():
 	Server.connect("server_add", self, "add_plant")
 	Server.connect("server_remove", self, "remove_plant")
 	create_grid()
+	Server.connect_to_server()
 
 func create_grid():
 	# make ground geometry
@@ -49,8 +50,13 @@ func populate_garden(garden_grid):
 	grid_size = garden_grid[0].size()
 	for x in range(grid_size):
 		for z in range(grid_size):
-			print(garden_grid[x][z])
-			JSON.print(garden_grid[x][z])
+			var plant_data = garden_grid[x][z]
+			if !plant_data.empty():
+				var p = JSON.parse(plant_data)
+				if typeof(p.result) == TYPE_ARRAY:
+					add_plant(p.result, Vector3(x,0,z))
+				else:
+					push_error("Parse error. Unexpected type.")
 
 
 

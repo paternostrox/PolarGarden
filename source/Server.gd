@@ -8,8 +8,8 @@ signal server_populate(garden_data)
 signal server_add(plant_data, pos)
 signal server_remove(pos)
 
-func _ready():
-    connect_to_server()
+#func _ready():
+#    connect_to_server()
 
 func connect_to_server():
     network.create_client(ip, port)

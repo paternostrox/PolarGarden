@@ -29,7 +29,7 @@ func _process(delta):
 
 func draw_plant():
 
-	var head_count = 2
+	var head_count = 1
 
 	mesh = ArrayMesh.new()
 
@@ -104,7 +104,7 @@ func generate_head():
 		var flower_type = 0
 	
 		match flower_type:
-			# 1 Spherical Rational Polar (theta, 1)
+			# 1 Spherical Rational Polar
 			0:
 				boundaries = [
 					4,12, # a
@@ -114,6 +114,8 @@ func generate_head():
 				vals = get_values_inrange(boundaries)
 	
 				flower_eq = "spherical2cartesian(Vector3(%f*cos(%f/%f*t), t, t))" % [vals[0], vals[1], vals[2]]
+				#flower_eq = "spherical2cartesian(Vector3(11*cos(4.0/3.0*t), t, t))"
+				print(flower_eq)
 				
 				var p = 2 if ((vals[1]*vals[2]) % 2 == 0) else 1
 				flower_length = PI * 2 * vals[2]
@@ -241,7 +243,18 @@ func get_basis(p0: Vector3, p1: Vector3) -> Basis:
 	# make my basis
 	var basis = Basis()
 	basis.y = p1-p0 # this is the tangent line
-	basis.z = basis.y.cross(Vector3.RIGHT)
+	basis.z = basis.y.cross(Vector3.BACK)
+	basis.x = basis.z.cross(basis.y)
+
+	basis = basis.orthonormalized()
+	return basis
+
+func get_basiz(t: float) -> Basis:
+
+	# make my basis
+	var basis = Basis()
+	basis.y = spherical2cartesian(Vector3((-11*(4/3))*sin(4.0/3.0*t), 1, 1)) # this is the tangent line
+	basis.z = spherical2cartesian(Vector3((-11*(16/9))*cos(4.0/3.0*t), 0, 0))
 	basis.x = basis.z.cross(basis.y)
 
 	basis = basis.orthonormalized()
