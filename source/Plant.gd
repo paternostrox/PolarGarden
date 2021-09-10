@@ -1,4 +1,4 @@
-extends MeshInstance
+extends Spatial
 
 var rng = RandomNumberGenerator.new()
 
@@ -13,14 +13,21 @@ func _ready():
 
 func draw_plant(plant_data):
 
-	mesh = ArrayMesh.new()
+	var stalk_node = MeshInstance.new()
+	add_child(stalk_node)
+	stalk_node.mesh = ArrayMesh.new()
 
-	var stalk_top = draw_equation(mesh, plant_data[0], Vector3.ZERO, plant_data[1])
-	mesh.surface_set_material(0, make_material(plant_data[2],plant_data[3],plant_data[4]))
+	var stalk_top = draw_equation(stalk_node.mesh, plant_data[0], Vector3.ZERO, plant_data[1])
+	stalk_node.mesh.surface_set_material(0, make_material(plant_data[2],plant_data[3],plant_data[4]))
 
 	for i in range(5, plant_data.size(), 5):
-		draw_equation(mesh, plant_data[i], stalk_top, plant_data[i+1])
-		mesh.surface_set_material(i/5, make_material(plant_data[i+2],plant_data[i+3],plant_data[i+4]))
+		var head_node = MeshInstance.new()
+		head_node.transform.origin = stalk_top
+		head_node.rotation = Vector3(rng.randf_range(0,360),rng.randf_range(0,360),rng.randf_range(0,360))
+		add_child(head_node)
+		head_node.mesh = ArrayMesh.new()
+		draw_equation(head_node.mesh, plant_data[i], Vector3.ZERO, plant_data[i+1])
+		head_node.mesh.surface_set_material(0, make_material(plant_data[i+2],plant_data[i+3],plant_data[i+4]))
 	
 func draw_equation(mesh: ArrayMesh, eq: String, start_point: Vector3, length: float):
 
