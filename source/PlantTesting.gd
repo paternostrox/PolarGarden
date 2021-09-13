@@ -113,7 +113,7 @@ func generate_head():
 				]
 				vals = get_values_inrange(boundaries)
 	
-				flower_eq = "spherical2cartesian(Vector3(%f*cos(%f/%f*t), t, t))" % [vals[0], vals[1], vals[2]]
+				flower_eq = "spherical2cartesian(Vector3(0.5*t, t, cos(t)))"
 				#flower_eq = "spherical2cartesian(Vector3(11*cos(4.0/3.0*t), t, t))"
 				print(flower_eq)
 				

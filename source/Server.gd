@@ -28,6 +28,10 @@ func on_connection_failed():
 func grid_interact(requester, pos: Vector3):
     rpc_id(1, "serve_interaction", requester, pos)
 
+func grid_cross(requester, parents_poss, pos):
+    rpc_id(1, "serve_cross", requester, parents_poss, pos)
+
+
 remote func return_garden(requester, jgarden):
     var p = JSON.parse(jgarden)
     if typeof(p.result) == TYPE_ARRAY:
@@ -44,5 +48,4 @@ remote func return_add(requester, jplant_data, pos: Vector3):
 
 remote func return_remove(requester, pos: Vector3):
     emit_signal("server_remove", pos)
-    print("FIRED");
 

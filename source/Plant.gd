@@ -2,7 +2,7 @@ extends Spatial
 
 var rng = RandomNumberGenerator.new()
 
-var tube_radius : float = 0.3
+var tube_radius : float = 0.5
 var point_amount : int = 3
 
 onready var stalk_exp = Expression.new()
@@ -23,7 +23,7 @@ func draw_plant(plant_data):
 	for i in range(5, plant_data.size(), 5):
 		var head_node = MeshInstance.new()
 		head_node.transform.origin = stalk_top
-		head_node.rotation = Vector3(rng.randf_range(0,360),rng.randf_range(0,360),rng.randf_range(0,360))
+		#head_node.rotation = Vector3(rng.randf_range(0,360),rng.randf_range(0,360),rng.randf_range(0,360))
 		add_child(head_node)
 		head_node.mesh = ArrayMesh.new()
 		draw_equation(head_node.mesh, plant_data[i], Vector3.ZERO, plant_data[i+1])

@@ -1,0 +1,140 @@
+[gd_scene load_steps=22 format=2]
+
+[ext_resource path="res://artwork/particle-tex/magic_03.png" type="Texture" id=1]
+[ext_resource path="res://artwork/particle-tex/magic_05.png" type="Texture" id=2]
+[ext_resource path="res://artwork/particle-tex/circle_02.png" type="Texture" id=3]
+
+[sub_resource type="SpatialMaterial" id=1]
+flags_transparent = true
+flags_unshaded = true
+vertex_color_use_as_albedo = true
+params_blend_mode = 1
+params_cull_mode = 2
+albedo_texture = ExtResource( 3 )
+
+[sub_resource type="Curve" id=2]
+_data = [ Vector2( 0, 0.811364 ), 0.0, 0.0, 0, 0, Vector2( 0.493421, 1 ), 0.0, 0.0, 0, 0, Vector2( 1, 0.829545 ), 0.0, 0.0, 0, 0 ]
+
+[sub_resource type="CurveTexture" id=3]
+curve = SubResource( 2 )
+
+[sub_resource type="ParticlesMaterial" id=4]
+direction = Vector3( 0, 0, 0 )
+spread = 0.0
+gravity = Vector3( 0, 0, 0 )
+scale_curve = SubResource( 3 )
+color = Color( 0.866667, 0.65098, 0.0705882, 1 )
+
+[sub_resource type="QuadMesh" id=5]
+
+[sub_resource type="SpatialMaterial" id=6]
+flags_transparent = true
+flags_unshaded = true
+vertex_color_use_as_albedo = true
+params_blend_mode = 1
+params_cull_mode = 2
+albedo_texture = ExtResource( 1 )
+
+[sub_resource type="Curve" id=7]
+_data = [ Vector2( 0, 0.590909 ), 0.0, 0.0, 0, 0, Vector2( 0.5, 1 ), 0.0, 0.0, 0, 0, Vector2( 1, 0.572727 ), 0.0, 0.0, 0, 0 ]
+
+[sub_resource type="CurveTexture" id=8]
+curve = SubResource( 7 )
+
+[sub_resource type="ParticlesMaterial" id=9]
+render_priority = 10
+direction = Vector3( 0, 0, 0 )
+spread = 0.0
+gravity = Vector3( 0, 0, 0 )
+scale_curve = SubResource( 8 )
+color = Color( 0.898039, 0.721569, 0.0509804, 1 )
+
+[sub_resource type="QuadMesh" id=10]
+
+[sub_resource type="SpatialMaterial" id=11]
+flags_transparent = true
+flags_unshaded = true
+vertex_color_use_as_albedo = true
+params_blend_mode = 1
+params_billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+albedo_texture = ExtResource( 2 )
+
+[sub_resource type="Curve" id=12]
+_data = [ Vector2( 0, 1 ), 0.0, 0.0, 0, 0, Vector2( 1, 0.531818 ), 0.0, 0.0, 0, 0 ]
+
+[sub_resource type="CurveTexture" id=13]
+curve = SubResource( 12 )
+
+[sub_resource type="ParticlesMaterial" id=14]
+emission_shape = 1
+emission_sphere_radius = 0.25
+direction = Vector3( 0, 0, 0 )
+spread = 0.0
+gravity = Vector3( 0, 1, 0 )
+radial_accel = 0.2
+radial_accel_random = 0.5
+tangential_accel = 0.4
+tangential_accel_random = 0.5
+scale_curve = SubResource( 13 )
+color = Color( 0.913725, 0.662745, 0.0666667, 1 )
+
+[sub_resource type="QuadMesh" id=15]
+size = Vector2( 0.15, 0.15 )
+
+[sub_resource type="SpatialMaterial" id=16]
+flags_transparent = true
+flags_unshaded = true
+vertex_color_use_as_albedo = true
+params_blend_mode = 1
+params_billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+albedo_texture = ExtResource( 2 )
+
+[sub_resource type="ParticlesMaterial" id=17]
+emission_shape = 1
+emission_sphere_radius = 0.25
+direction = Vector3( 0, 0, 0 )
+spread = 0.0
+gravity = Vector3( 0, 1, 0 )
+scale_curve = SubResource( 13 )
+color = Color( 0.913725, 0.662745, 0.0666667, 1 )
+
+[sub_resource type="QuadMesh" id=18]
+size = Vector2( 0.1, 1.5 )
+
+[node name="Aura" type="Spatial"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.001, 0 )
+
+[node name="OuterAura" type="Particles" parent="."]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0 )
+material_override = SubResource( 1 )
+amount = 3
+lifetime = 2.5
+process_material = SubResource( 4 )
+draw_pass_1 = SubResource( 5 )
+
+[node name="InnerAura" type="Particles" parent="."]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0 )
+material_override = SubResource( 6 )
+amount = 1
+process_material = SubResource( 9 )
+draw_pass_1 = SubResource( 10 )
+
+[node name="dust" type="Particles" parent="."]
+material_override = SubResource( 11 )
+amount = 100
+lifetime = 2.0
+process_material = SubResource( 14 )
+draw_pass_1 = SubResource( 15 )
+
+[node name="dust2" type="Particles" parent="."]
+material_override = SubResource( 16 )
+amount = 40
+lifetime = 2.0
+process_material = SubResource( 17 )
+draw_pass_1 = SubResource( 18 )
