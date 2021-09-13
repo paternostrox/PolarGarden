@@ -4,13 +4,12 @@ export(PackedScene) var plant_scene
 
 var rng = RandomNumberGenerator.new()
 
-var grid_width : int = 20 # in units
-var grid_depth : int = 20 # in units
-var cell_size : float = 1 # in meters
 var grid = []
 var grid_size
 
 var ground_mesh
+
+signal plant_added(plant_data)
 
 func _ready():
 	Server.connect("server_populate", self, "populate_garden")
@@ -24,9 +23,9 @@ func create_grid():
 	draw_ground()
 
 	# make grid matrix
-	for x in range(grid_width):
+	for x in range(GameVars.grid_width):
 		grid.append([])
-		for _y in range(grid_depth):
+		for _y in range(GameVars.grid_depth):
 			grid[x].append("")
 
 # func randomize():
@@ -42,8 +41,8 @@ func create_grid():
 				
 	
 func world2grid(var pos: Vector3):
-	var x = clamp(floor(pos.x), 0, grid_width-1)
-	var z = clamp(floor(pos.z), 0, grid_depth-1)
+	var x = clamp(floor(pos.x), 0, GameVars.grid_width-1)
+	var z = clamp(floor(pos.z), 0, GameVars.grid_depth-1)
 	return [x,z]
 
 func populate_garden(garden_grid):
@@ -58,21 +57,30 @@ func populate_garden(garden_grid):
 				else:
 					push_error("Parse error. Unexpected type.")
 
-
-
 func add_plant(plant_data, pos: Vector3):
 	var new_plant = plant_scene.instance()
-	new_plant.transform.origin = Vector3(pos.x*cell_size + cell_size/2.0, 0, pos.z*cell_size + cell_size/2.0)
+	new_plant.transform.origin = Vector3(pos.x*GameVars.cell_size + GameVars.cell_size/2.0, 0, pos.z*GameVars.cell_size + GameVars.cell_size/2.0)
 	add_child(new_plant)
 	grid[pos.x][pos.z] = new_plant.name
 	new_plant.draw_plant(plant_data)
-	#emit_signal("flower_added", [plant_data[0], plant_data[1], plant_data[2]])
+	emit_signal("plant_added", plant_data)
 	
 
 func remove_plant(pos: Vector3):
 	var path = grid[pos.x][pos.z]
 	get_node(path).queue_free()
 	grid[pos.x][pos.z] = ""
+
+func try_cross(parents_poss, pos):
+	for i in range(parents_poss.size()):
+		if !check_plant(parents_poss[i]):
+			return
+	Server.grid_cross(get_instance_id(), parents_poss, pos)
+
+func check_plant(pos: Vector3):
+	var gridxz = world2grid(pos)
+	var name = grid[gridxz[0]][gridxz[1]]
+	return !name.empty()
 
 func draw_ground():
 	ground_mesh = ArrayMesh.new()
@@ -87,9 +95,9 @@ func draw_ground():
 
 	## GENERATE MESH ##
 	verts.append(Vector3(0, 0, 0))
-	verts.append(Vector3(grid_width, 0, 0))
-	verts.append(Vector3(grid_width, 0, grid_depth))
-	verts.append(Vector3(0, 0, grid_depth))
+	verts.append(Vector3(GameVars.grid_width, 0, 0))
+	verts.append(Vector3(GameVars.grid_width, 0, GameVars.grid_depth))
+	verts.append(Vector3(0, 0, GameVars.grid_depth))
 
 	uvs.append(Vector2(0,0))
 	uvs.append(Vector2(1,0))

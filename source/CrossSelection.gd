@@ -14,9 +14,12 @@ func _ready():
 		auras.append(aura)
 
 func select(pos: Vector3):
-	auras[selected_amount].transform.origin = Vector3(pos.x, 0.001,pos.z)
-	auras[selected_amount].visible = true
-	selected_amount += 1
+	if(selected_amount < max_selection):
+		auras[selected_amount].transform.origin = GameVars.grid2world(GameVars.world2grid(pos),0.0001)
+		auras[selected_amount].visible = true
+		selected_amount += 1
+	else:
+		deselect()
 
 func deselect():
 	for i in range(max_selection):

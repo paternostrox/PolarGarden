@@ -1,9 +1,10 @@
 extends Camera
 
 export(NodePath) var selection_path
+export(NodePath) var garden_grid_path
 
 signal grid_interaction(requester, pos)
-signal plant_crossing(requester, parents_poss, pos)
+#signal try_crossing(parents_poss, pos)
 
 var from
 var to
@@ -13,11 +14,13 @@ var clicked_right = false
 const ray_length = 100000
 
 var selection
+var garden_grid
 
 func _ready():
+	garden_grid = get_node(garden_grid_path)
 	selection = get_node(selection_path)
 	connect("grid_interaction", Server, "grid_interact")
-	connect("plant_crossing", Server, "grid_cross")
+	#connect("try_crossing", garden_grid, "try_cross")
 
 func _input(event):
 	if event is InputEventMouseButton and event.pressed:
@@ -35,7 +38,7 @@ func _physics_process(_delta):
 		var result = space_state.intersect_ray(from, to)
 		if result:
 			if(selection.get_selected_amount() > 1):
-				emit_signal("", get_instance_id(), selection.get_positions(),result.position)
+				garden_grid.try_cross(selection.get_positions(),result.position)
 				selection.deselect()
 			else:
 				emit_signal("grid_interaction", get_instance_id(), result.position)
@@ -45,6 +48,6 @@ func _physics_process(_delta):
 		var space_state = get_world().direct_space_state
 		var result = space_state.intersect_ray(from, to)
 		if result:
-			#print(result.position)
-			selection.select(result.position)
+			if(garden_grid.check_plant(result.position)):
+				selection.select(result.position)
 		clicked_right = false
