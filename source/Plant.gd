@@ -8,6 +8,9 @@ var point_amount : int = 3
 onready var stalk_exp = Expression.new()
 onready var flower_exp = Expression.new()
 
+var der_delta = 0.0001
+var mesh_sampling = 0.05
+
 func _ready():
 	rng.randomize()
 
@@ -39,7 +42,7 @@ func draw_equation(mesh: ArrayMesh, eq: String, start_point: Vector3, length: fl
 		return
 
 	# Draw
-	var end_point = draw_tube(mesh, expression, tube_radius, length, .05)
+	var end_point = draw_tube(mesh, expression, tube_radius, length, mesh_sampling)
 	return end_point
 		
 func get_values_inrange(var boundaries):
@@ -73,13 +76,13 @@ func draw_tube(mesh: ArrayMesh, expression: Expression, radius: float, length: f
 	var t_sample = 0
 	var bottom_ring = get_ring(expression, t_sample, radius)
 	var top_ring
-	var i = 1
+	var i = 0
 	while i <= max_iterations:
 		t_sample = i * sampling
 
 		top_ring = get_ring(expression, t_sample, radius)
 
-		for  j  in range(point_amount):
+		for j in range(point_amount):
 			
 			var next_j = (j+1) % point_amount
 
@@ -122,17 +125,18 @@ func draw_tube(mesh: ArrayMesh, expression: Expression, radius: float, length: f
 func get_ring(expression: Expression, t: float, radius: float) -> PoolVector3Array:
 
 	# get two points to calculate tangent
-	var p0 = expression.execute([t], self)
-	var p1 = expression.execute([t + .0001], self)
+	#var pxmd = expression.execute([t - der_delta], self)
+	var px = expression.execute([t], self)
+	var pxpd = expression.execute([t + der_delta], self)
 
-	var inv_basis = get_basis(p0, p1).inverse()
+	var inv_basis = get_basis(px, pxpd).inverse()
 
 	var angle_inc = 360.0 / point_amount
 	var current_angle = 0
 
 	var ring = PoolVector3Array()
 	for _i in range(point_amount):
-		var point = p0 +  inv_basis.xform(Vector3(
+		var point = px +  inv_basis.xform(Vector3(
 			cos(deg2rad(current_angle))*radius, 0, sin(deg2rad(current_angle))*radius))
 		ring.append(point)
 		current_angle = fmod((current_angle + angle_inc),360.0)
@@ -140,17 +144,30 @@ func get_ring(expression: Expression, t: float, radius: float) -> PoolVector3Arr
 	return ring
 
 
-func get_basis(p0: Vector3, p1: Vector3) -> Basis:
+func get_basis(px: Vector3, pxpd: Vector3) -> Basis:
 
 	# make my basis
 	var basis = Basis()
-	basis.y = p1-p0 # this is the tangent line
-	basis.z = basis.y.cross(Vector3.BACK)
+	basis.y = (pxpd - px) / (der_delta) # this is the tangent (first derivative)
+	basis.z = basis.y.cross(Vector3.BACK) # this is the curl of the tangent (second derivative)
 	basis.x = basis.z.cross(basis.y)
 
 	basis = basis.orthonormalized()
 
 	return basis
+
+func get_basis_der(pxmd: Vector3, px: Vector3, pxpd: Vector3) -> Basis:
+
+	# make my basis
+	var basis = Basis()
+	basis.y = (pxpd - pxmd) / (2*der_delta) # this is the tangent (first derivative)
+	basis.z = (pxpd - 2*px + pxmd) / (der_delta*der_delta) # this is the curl of the tangent (second derivative)
+	basis.x = basis.z.cross(basis.y)
+
+	basis = basis.orthonormalized()
+
+	return basis
+	
 
 # (r,theta,phi) -> (x,y,z)
 func spherical2cartesian(spherical_pos: Vector3) -> Vector3:

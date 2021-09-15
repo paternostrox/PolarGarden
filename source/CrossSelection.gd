@@ -2,7 +2,7 @@ extends Node
 
 export(PackedScene) var selection_aura
 
-export var max_selection = 2
+export var max_selection = 4
 var selected_amount = 0
 var auras = []
 
