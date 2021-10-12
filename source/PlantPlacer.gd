@@ -19,7 +19,7 @@ var garden_grid
 func _ready():
 	garden_grid = get_node(garden_grid_path)
 	selection = get_node(selection_path)
-	connect("grid_interaction", Server, "grid_interact")
+	#connect("grid_interaction", Server, "grid_interact")
 	#connect("try_crossing", garden_grid, "try_cross")
 
 func _input(event):
@@ -41,7 +41,7 @@ func _physics_process(_delta):
 				garden_grid.try_cross(selection.get_positions(),result.position)
 				selection.deselect()
 			else:
-				emit_signal("grid_interaction", get_instance_id(), result.position)
+				garden_grid.try_interaction(result.position)
 		clicked_left = false
 		
 	if clicked_right:

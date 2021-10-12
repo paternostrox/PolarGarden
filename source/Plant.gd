@@ -9,7 +9,7 @@ onready var stalk_exp = Expression.new()
 onready var flower_exp = Expression.new()
 
 var der_delta = 0.0001
-var mesh_sampling = 0.05
+var mesh_sampling = 0.02
 
 func _ready():
 	rng.randomize()
@@ -77,7 +77,7 @@ func draw_tube(mesh: ArrayMesh, expression: Expression, radius: float, length: f
 	var bottom_ring = get_ring(expression, t_sample, radius)
 	var top_ring
 	var i = 0
-	while i <= max_iterations:
+	while i <= max_iterations + 1:
 		t_sample = i * sampling
 
 		top_ring = get_ring(expression, t_sample, radius)

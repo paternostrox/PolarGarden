@@ -107,17 +107,17 @@ func generate_head():
 			# 1 Spherical Rational Polar
 			0:
 				boundaries = [
-					4,12, # a
-					1,20, # n
-					1,20 # d
+					2,5, # a
+					2,5, # b
+					1,2 # c
 				]
-				vals = get_values_inrange(boundaries)
+				vals = get_valuesf_inrange(boundaries)
 	
 				#flower_eq = "(spherical2cartesian(Vector3(6.0*cos((15.0/15.0)*t), t, t)) + spherical2cartesian(Vector3(7.0*cos((2.0/14.0)*t), t, t))) / 2.0"
-				flower_eq = "(spherical2cartesian(Vector3(3*(2.8*pow(round(sin(1.2*t)),2) + pow(round(cos(1.2*t)),2) + 3*asin(cos(1.5*t + 0.97))), t, t)) + spherical2cartesian(Vector3(10*sin(2*t) + 3*round(sin(1.2*t)), t, t))) / 2"
+				flower_eq = "spherical2cartesian(Vector3(3*(2.8*pow(round(sin(1.2*t)),2) + pow(round(cos(1.2*t)),2) + 3*asin(cos(1.5*t + 0.97))), t, t))"
 				print(flower_eq)
 				
-				var p = 2 if ((vals[1]*vals[2]) % 2 == 0) else 1
+				#var p = 2 if ((vals[1]*vals[2]) % 2 == 0) else 1
 				flower_length = 20*PI
 				#flower_length = PI * vals[2] * p
 
@@ -133,13 +133,20 @@ func draw_equation(mesh: ArrayMesh, eq: String, start_point: Vector3, length: fl
 		return
 
 	# Draw
-	var end_point = draw_tube(mesh, expression, tube_radius, length, .05)
+	var end_point = draw_tube(mesh, expression, tube_radius, length, .02)
 	return end_point
 
 func get_values_inrange(var boundaries):
 	var vals = PoolIntArray()
 	# Get random values (within the boundaries)
 	for i in range(boundaries.size()/2):
+		vals.append(rng.randf_range(boundaries[i],boundaries[i+1]))
+	return vals
+
+func get_valuesf_inrange(var boundaries):
+	var vals = []
+	# Get random values (within the boundaries)
+	for i in range(0,boundaries.size(),2):
 		vals.append(rng.randf_range(boundaries[i],boundaries[i+1]))
 	return vals
 
@@ -171,8 +178,8 @@ func draw_tube(mesh: ArrayMesh, expression: Expression, radius: float, length: f
 	var t_sample = 0
 	var bottom_ring = get_ring(expression, t_sample, radius)
 	var top_ring
-	var i = 1
-	while i <= max_iterations:
+	var i = 0
+	while i <= max_iterations + 1:
 		t_sample = i * sampling
 
 		top_ring = get_ring(expression, t_sample, radius)

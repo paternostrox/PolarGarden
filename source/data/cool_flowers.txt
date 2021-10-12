@@ -1,11 +1,12 @@
 #USE
-"spherical2cartesian(Vector3(10*sin(2*t), t, t))"
+"spherical2cartesian(Vector3(10*sin(2*t), t, t))" int rhodonea
+"spherical2cartesian(Vector3(4*(2 + cos(10*t) + 2*sin(5*t)), t, t))" dented leave
 
 "spherical2cartesian(Vector3(8*pow(sin(4*t),2) + 12*cos(4*t), t, t))" # butterfly
 "spherical2cartesian(Vector3(3*(3*asin(cos(1.5*t + 0.97))), t, t))" # RD just spade
 "spherical2cartesian(Vector3(3*(2.8*pow(round(sin(1.2*t)),2) + pow(round(cos(1.2*t)),2) + 3*asin(cos(1.5*t + 0.97))), t, t))" # RD spade w/ strips
 
-"spherical2cartesian(Vector3(10*sin(2*t) + 3*round(sin(1.2*t)), t, t))" # WIP
+"spherical2cartesian(Vector3(10*sin(2*t) + 3*round(sin(1.2*t)), t, t))" # WIP int rhodonea w/ strips
 
 
 

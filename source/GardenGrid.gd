@@ -1,6 +1,7 @@
 extends MeshInstance
 
 export(PackedScene) var plant_scene
+export(NodePath) var ground_path
 
 var rng = RandomNumberGenerator.new()
 
@@ -8,10 +9,12 @@ var grid = []
 var grid_size
 
 var ground_mesh
+var ground
 
 signal plant_added(plant_data)
 
 func _ready():
+	ground = get_node(ground_path)
 	Server.connect("server_populate", self, "populate_garden")
 	Server.connect("server_add", self, "add_plant")
 	Server.connect("server_remove", self, "remove_plant")
@@ -20,7 +23,9 @@ func _ready():
 
 func create_grid():
 	# make ground geometry
-	draw_ground()
+	#draw_ground()
+	#ground.mesh.size = Vector3(GameVars.grid_width,2,GameVars.grid_depth)
+	#ground.transform.origin = Vector3(GameVars.grid_width/2,-1,GameVars.grid_depth/2)
 
 	# make grid matrix
 	for x in range(GameVars.grid_width):
@@ -38,12 +43,31 @@ func create_grid():
 # 			var num = rng.randi_range(0,1)
 # 			if num == 1:
 # 				add_plant(x,z)
-				
-	
-func world2grid(var pos: Vector3):
-	var x = clamp(floor(pos.x), 0, GameVars.grid_width-1)
-	var z = clamp(floor(pos.z), 0, GameVars.grid_depth-1)
-	return [x,z]
+
+func world2player(var pos: Vector3):
+	if(pos.x >= 0):
+		if(pos.z >= 0):
+			return 1
+		else:
+			return 3
+	else:
+		if(pos.z >= 0):
+			return 2
+		else:
+			return 0
+
+func world2grid(pos):
+	pos.x += GameVars.grid_width/2
+	pos.z += GameVars.grid_depth/2
+	var x = clamp(floor(pos.x), 0, GameVars.grid_width)
+	var z = clamp(floor(pos.z), 0, GameVars.grid_depth)
+	var gridpos = Vector3(x,0,z)
+	return gridpos
+
+func grid2world(pos):
+	pos.x -= GameVars.grid_width/2
+	pos.z -= GameVars.grid_depth/2
+	return pos
 
 func populate_garden(garden_grid):
 	grid_size = garden_grid[0].size()
@@ -58,8 +82,9 @@ func populate_garden(garden_grid):
 					push_error("Parse error. Unexpected type.")
 
 func add_plant(plant_data, pos: Vector3):
+	var world_pos = grid2world(pos)
 	var new_plant = plant_scene.instance()
-	new_plant.transform.origin = Vector3(pos.x*GameVars.cell_size + GameVars.cell_size/2.0, 0, pos.z*GameVars.cell_size + GameVars.cell_size/2.0)
+	new_plant.transform.origin = Vector3(world_pos.x*GameVars.cell_size + GameVars.cell_size/2.0, 0, world_pos.z*GameVars.cell_size + GameVars.cell_size/2.0)
 	add_child(new_plant)
 	grid[pos.x][pos.z] = new_plant.name
 	new_plant.draw_plant(plant_data)
@@ -71,15 +96,21 @@ func remove_plant(pos: Vector3):
 	get_node(path).queue_free()
 	grid[pos.x][pos.z] = ""
 
+func try_interaction(pos: Vector3):
+	print("grid2player=%d playernum=%d" % [world2player(pos), GameVars.player_number])
+	if(world2player(pos) == GameVars.player_number):
+		Server.grid_interact(get_instance_id(), pos)
+
 func try_cross(parents_poss, pos):
-	for i in range(parents_poss.size()):
-		if !check_plant(parents_poss[i]):
-			return
-	Server.grid_cross(get_instance_id(), parents_poss, pos)
+	if(world2player(pos) == GameVars.player_number):
+		for i in range(parents_poss.size()):
+			if !check_plant(parents_poss[i]):
+				return
+		Server.grid_cross(get_instance_id(), parents_poss, pos)
 
 func check_plant(pos: Vector3):
-	var gridxz = world2grid(pos)
-	var name = grid[gridxz[0]][gridxz[1]]
+	var gridpos = world2grid(pos)
+	var name = grid[gridpos.x][gridpos.z]
 	return !name.empty()
 
 func draw_ground():

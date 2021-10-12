@@ -31,7 +31,9 @@ func grid_interact(requester, pos: Vector3):
 func grid_cross(requester, parents_poss, pos):
     rpc_id(1, "serve_cross", requester, parents_poss, pos)
 
-
+remote func set_player_number(number):
+    GameVars.player_number = number
+    
 remote func return_garden(requester, jgarden):
     var p = JSON.parse(jgarden)
     if typeof(p.result) == TYPE_ARRAY:
