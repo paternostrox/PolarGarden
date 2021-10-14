@@ -149,8 +149,8 @@ func get_basis(px: Vector3, pxpd: Vector3) -> Basis:
 	# make my basis
 	var basis = Basis()
 	basis.y = (pxpd - px) / (der_delta) # this is the tangent (first derivative)
-	basis.z = basis.y.cross(Vector3.BACK) # this is the curl of the tangent (second derivative)
-	basis.x = basis.z.cross(basis.y)
+	basis.z = basis.y.cross(Vector3.BACK) # cross product between tangent and unit BACK vector
+	basis.x = basis.z.cross(basis.y) # cross product between the later two
 
 	basis = basis.orthonormalized()
 

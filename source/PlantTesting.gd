@@ -114,7 +114,7 @@ func generate_head():
 				vals = get_valuesf_inrange(boundaries)
 	
 				#flower_eq = "(spherical2cartesian(Vector3(6.0*cos((15.0/15.0)*t), t, t)) + spherical2cartesian(Vector3(7.0*cos((2.0/14.0)*t), t, t))) / 2.0"
-				flower_eq = "spherical2cartesian(Vector3(3*(2.8*pow(round(sin(1.2*t)),2) + pow(round(cos(1.2*t)),2) + 3*asin(cos(1.5*t + 0.97))), t, t))"
+				flower_eq = "spherical2cartesian(Vector3(10*asin(cos(1.2*t + 0.97)), t, t))"
 				print(flower_eq)
 				
 				#var p = 2 if ((vals[1]*vals[2]) % 2 == 0) else 1

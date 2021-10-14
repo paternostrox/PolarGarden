@@ -108,7 +108,7 @@ color = Color( 0.913725, 0.662745, 0.0666667, 1 )
 size = Vector2( 0.1, 1.5 )
 
 [node name="Aura" type="Spatial"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.001, 0 )
+transform = Transform( 2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, 0, 0.001, 0 )
 
 [node name="OuterAura" type="Particles" parent="."]
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0 )
