@@ -3,9 +3,9 @@ An experiment on procedural generation in spherical coordinates.
 
 ## Description
 
-The project was made to practice my skills in math, OpenGL, GDScript and to mess with online multiplayer using RPCs.
+The project was made to practice my skills in math, OpenGL, GDScript and to mess with online multiplayer using RPCs. Do not expect it to be beautiful! :sweat_smile:
 
-Do not expect it to be beautiful! :sweat_smile:
+
 
 ## The system
 
