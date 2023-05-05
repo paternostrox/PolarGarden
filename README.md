@@ -5,15 +5,17 @@ An experiment on procedural generation in spherical coordinates.
 
 The project was made to practice my skills in math, OpenGL, GDScript and to mess with online multiplayer using RPCs. Do not expect it to be beautiful! :sweat_smile:
 
-
+The server allows up to four clients to join and share a garden. The clients can plant new plants based on mathematical equations and also crossbreed existing plants into new ones.
 
 ## The system
 
-This experiment is composed by two parts, the client project (this one) and the server project that can be found in [here](https://github.com/paternostrox/PolarGarden-Server).
+This experiment is composed by two projects, the client project (this one) and the server project that can be found in [here](https://github.com/paternostrox/PolarGarden-Server).
 
-
+A class diagram of the client system is shown bellow:
 
 <img src="https://user-images.githubusercontent.com/19597048/236262658-fbce294f-1c45-409e-898e-9e213ad3dd50.png" width="600">
+
+## Examples
 
 |  | Example 1 | Example 2 | Example 3 |
 | --- | --- | --- | --- |
